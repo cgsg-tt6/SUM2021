@@ -1,6 +1,6 @@
 /* FILE NAME: t02eyes.c
  * PROGRAMMER: TT6
- * DATE: 10.06.2021
+ * DATE: 10.06.2021 - 12.06.2021
  * PURPOSE: Программа слежение за мышью
  */
 
@@ -69,8 +69,12 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevTnstance,
 LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,
                                WPARAM wParam,LPARAM lParam )
 { 
+  PAINTSTRUCT ps;
   POINT pt;
   static HDC hDC;
+  static HDC hMemDC;
+  static HBITMAP hBm;
+  /* static HWND hWnd; */
   static INT x, y;
   static INT w, h;
   static INT x0, y0, a, Cx, Cy, i;
@@ -79,17 +83,38 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,
   switch (Msg)
   {
   case WM_CREATE:
+    hDC = GetDC(hWnd);
+    hMemDC = CreateCompatibleDC(hDC);
+    ReleaseDC(hWnd, hDC);
+    hBm = NULL;
+
     SetTimer(hWnd, 30, 10, NULL);
     return 0;
   case WM_SIZE:
     w = LOWORD(lParam);
     h = HIWORD(lParam);
-    return 0;
-  case WM_TIMER:
+
+    /* If there is a picture, delete it */
+    if (hBm != NULL)
+      DeleteObject(hBm);
+
+    /* Get contect & make a pic */
     hDC = GetDC(hWnd);
+    hBm = CreateCompatibleBitmap(hDC, w, h);
+    ReleaseDC(hWnd, hDC);
+    SelectObject(hMemDC, hBm);
+    SendMessage(hWnd, WM_TIMER, 0, 0);
+    return 0;
+  case WM_PAINT:
+    hDC = BeginPaint(hWnd, &ps);
+    BitBlt(hDC, 0, 0, w, h, hMemDC, 0, 0, SRCCOPY);
+    EndPaint(hWnd, &ps);
+  case WM_TIMER:
+    ///hMemDC = GetDC(hWnd);
     GetCursorPos(&pt);
     ScreenToClient(hWnd, &pt);
-    Rectangle(hDC, 0, 0, w, h);   /* Clear background */
+    SelectObject(hMemDC, GetStockObject(BLACK_PEN));
+    Rectangle(hMemDC, 0, 0, w, h);   /* Clear background */
      srand(30);
      for (i = 0; i < 102; i++)
      {
@@ -97,13 +122,16 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,
       Cy = 200;
       R = 100;
       R1 = 25;
-      ///Ellipse(hDC, Cx - R, Cy - R, Cx + R, Cy + R);
-      DrawEye(hDC, rand() % w, rand() % h, 50 + rand() % 47, 18 + rand() % 8, pt.x, pt.y);
+      DrawEye(hMemDC, rand() % w, rand() % h, 50 + rand() % 47, 18 + rand() % 8, pt.x, pt.y);
      }
-    ReleaseDC(hWnd, hDC);
+    ///ReleaseDC(hWnd, hDC);
+    InvalidateRect(hWnd, NULL, FALSE);
     break;
- 
+  case WM_ERASEBKGND:
+    return 1;
   case WM_DESTROY:
+    DeleteObject(hBm);
+    DeleteDC(hMemDC);
     PostQuitMessage(0);
     KillTimer(hWnd, 30);
     return 0;

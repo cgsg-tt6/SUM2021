@@ -1,13 +1,14 @@
-/* FILE NAME: main.c
+/* FILE NAME: globe.c
  * PROGRAMMER: TT6
- * DATE: 18.06.2021
- * PURPOSE: 3D animation startup module.
+ * DATE: 16.06.2021
+ * PURPOSE: draw 3D spher
  */
+                    
+#include "globe.h"
 
-#include "../units/units.h"
+#pragma warning(disable: 4244)
 
-/* Window class name */
-#define TT6_WND_CLASS_NAME "My Summer Practice'2021 window class name"
+#define WND_CLASS_NAME "My Summer Practice'2021 window class name"
 
 /* The main program function.
  * ARGUMENTS:
@@ -29,57 +30,44 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevTnstance,
   HWND hWnd;
   MSG msg;
 
-  SetDbgMemHooks();
-
-  /* Fill window class structure */
+  /* Заполняем структуру окна */
   wc.style = CS_VREDRAW | CS_HREDRAW;
   wc.cbClsExtra = 0;
   wc.cbWndExtra = 0;
   wc.hbrBackground = (HBRUSH)COLOR_WINDOW; 
   wc.hCursor = LoadCursor(NULL, IDC_HAND);
   wc.hIcon = LoadIcon(NULL, IDI_WINLOGO);
-  wc.hInstance = hInstance;
-  wc.lpszClassName = TT6_WND_CLASS_NAME;
   wc.lpszMenuName = NULL;
-  wc.lpfnWndProc = TT6_MyWindowFunc;
+  wc.hInstance = hInstance;
+  wc.lpfnWndProc = MyWindowFunc;
+  wc.lpszClassName = WND_CLASS_NAME;
 
-
-  /* Register window class */
+  /* Регистрация класса в системе */
   if (!RegisterClass(&wc))
   {
     MessageBox(NULL, "Error register window class", "ERROR", MB_OK | MB_ICONERROR);
     return 0;
   }
   
-  /* Window creation */
+  /* Создание окна */
   hWnd =
-    CreateWindow(TT6_WND_CLASS_NAME,
-      "Animation System",
+    CreateWindow(WND_CLASS_NAME,
+      "Title",
       WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT, CW_USEDEFAULT,
-      CW_USEDEFAULT, CW_USEDEFAULT,
-      /* 100, 100, 800, 500, */
+      CW_USEDEFAULT, CW_USEDEFAULT, 
       NULL,
       NULL,
       hInstance,
       NULL);
 
+  /* Показать и перерисаовать окно */
   ShowWindow(hWnd, ShowCmd);
-  
-  /*** Create units ***/
-  TT6_AnimUnitAdd(TT6_UnitCreateCow());
+  UpdateWindow(hWnd);
 
-  /* Message loop */
-  while (TRUE)
-    if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-    {
-      if (msg.message == WM_QUIT)
-        break;
-      DispatchMessage(&msg);
-    }
-    else
-      SendMessage(hWnd, WM_TIMER, 30, 0);
-
+  /* Цикл обработки сообщений, пока не будет получено сообщение 'WM_QUIT' */
+  while (GetMessage(&msg, NULL, 0, 0))
+    DispatchMessage(&msg);
   return 30;
 } /* End of 'WinMain' function */
 
@@ -96,49 +84,24 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevTnstance,
  * RETURNS:
  *   (LRESULT) message depende return value.
  */
-LRESULT CALLBACK TT6_MyWindowFunc( HWND hWnd, UINT Msg,
+LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,
                                WPARAM wParam,LPARAM lParam )
 { 
   HDC hDC;
   PAINTSTRUCT ps;
+  static HDC hMemDC;
+  static HBITMAP hBm;
+  static INT w, h;
 
   switch (Msg)
   {
-  case WM_GETMINMAXINFO:
-    ((MINMAXINFO *)lParam)->ptMaxTrackSize.y =
-      GetSystemMetrics(SM_CYMAXTRACK) + GetSystemMetrics(SM_CYCAPTION) + 2 * GetSystemMetrics(SM_CYBORDER);
-    return 0;
-
   case WM_CREATE:
     SetTimer(hWnd, 30, 1, NULL);
-    TT6_AnimInit(hWnd);
-    TT6_AnimInputInit(hWnd);
-    return 0;
-
-  case WM_SIZE:
-    /* Redraw frame */
-    TT6_AnimResize(LOWORD(lParam), HIWORD(lParam));
-    SendMessage(hWnd, WM_TIMER, 30, 0);
-    return 0;
-
-  case WM_TIMER:
-    /* Draw content */
-    TT6_AnimRender();
-    TT6_AnimMouseInit();
-
-    /* Send repaint message */
-    /* InvalidateRect(hWnd, NULL, FALSE); */
     hDC = GetDC(hWnd);
-    /* Copy frame to the window */
-    TT6_AnimCopyFrame(hDC);
+    hMemDC = CreateCompatibleDC(hDC);
     ReleaseDC(hWnd, hDC);
-    break;
-    
-  case WM_PAINT:
-    hDC = BeginPaint(hWnd, &ps);
-    /* Copy frame to window */
-    TT6_AnimCopyFrame(hDC);
-    EndPaint(hWnd, &ps);
+    hBm = NULL;
+    GLB_TimerInit();
     return 0;
 
   case WM_KEYDOWN:
@@ -146,29 +109,55 @@ LRESULT CALLBACK TT6_MyWindowFunc( HWND hWnd, UINT Msg,
       SendMessage(hWnd, WM_CLOSE, 0, 0);
     return 0;
 
-  case WM_MOUSEHWHEEL:
-    //TT6_MouseWheel += (SHORT)HIWORD(wParam);
+  case WM_SIZE:
+    w = LOWORD(lParam);
+    h = HIWORD(lParam);
+    WinW = w; 
+    WinH = h;
+
+    if (hBm != NULL)
+      DeleteObject(hBm);
+    hDC = GetDC(hWnd);
+    hBm = CreateCompatibleBitmap(hDC, WinW, WinH);
+    ReleaseDC(hWnd, hDC);
+    SelectObject(hMemDC, hBm);
+    SelectObject(hDC, GetStockObject(BLACK_PEN));
+    /* Set globe */
+    GlobeSet(WinW, WinH, r);
+    SendMessage(hWnd, WM_TIMER, 0, 0);
     return 0;
 
-  case WM_SYSKEYDOWN:
-    if (wParam == VK_RETURN)
-    {
-      /* FlipFullScreen(hWnd); */
-      return 0;
-    }
+  case WM_PAINT:
+    hDC = BeginPaint(hWnd, &ps);
+    BitBlt(hDC, 0, 0, w, h, hMemDC, 0, 0, SRCCOPY);
+    EndPaint(hWnd, &ps);
+
+  case WM_TIMER:
+    GLB_TimerResponse();
+
+    /* Clear background */
+    SelectObject(hMemDC, GetStockObject(NULL_PEN));
+    SelectObject(hMemDC, GetStockObject(GRAY_BRUSH));
+    Rectangle(hMemDC, 0, 0, w + 1, h + 1);
+    
+    /* Draw globe */
+    SelectObject(hMemDC, GetStockObject(BLACK_PEN));
+    GlobeDraw(hMemDC);
+    
+    InvalidateRect(hWnd, NULL, FALSE);
     break;
 
   case WM_ERASEBKGND:
     return 1;
 
   case WM_DESTROY:
-    TT6_AnimClose();
-    TT6_AnimMouseResponse();
+    DeleteObject(hBm);
+    DeleteDC(hMemDC);
     KillTimer(hWnd, 30);
     PostQuitMessage(0);
     return 0;
   }
   return DefWindowProc(hWnd, Msg, wParam, lParam);
-} /* End of 'TT6_MyWindowFunc' function */
+} /* End of 'MyWindowFunc' function */
 
 /* END OF 't07globe.c' FILE */

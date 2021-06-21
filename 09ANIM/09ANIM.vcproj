@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="T09ANIM"
-	ProjectGUID="{02D05EC1-1FCE-4C30-9BAB-20C9436EEC75}"
-	RootNamespace="T09ANIM"
+	Name="09ANIM"
+	ProjectGUID="{A6593B1D-775C-4393-9044-799C3B4D9300}"
+	RootNamespace="My09ANIM"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
 	>
@@ -185,58 +185,30 @@
 			<Filter
 				Name="Animation.System"
 				>
-				<File
-					RelativePath=".\src\anim\anim.c"
-					>
-				</File>
-				<File
-					RelativePath=".\src\anim\anim.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\anim\input.c"
-					>
-				</File>
-				<File
-					RelativePath=".\src\anim\timer.c"
-					>
-				</File>
-				<File
-					RelativePath=".\src\anim\unit.c"
-					>
-				</File>
 				<Filter
 					Name="Rendering.System"
 					>
 					<File
-						RelativePath=".\src\anim\rnd\glew.c"
+						RelativePath=".\src\anim\anim.c"
 						>
 					</File>
 					<File
-						RelativePath=".\src\anim\rnd\rnd.h"
+						RelativePath=".\src\anim\anim.h"
 						>
 					</File>
 					<File
-						RelativePath=".\src\anim\rnd\rndbase.c"
+						RelativePath=".\src\anim\input.c"
 						>
 					</File>
 					<File
-						RelativePath=".\src\anim\rnd\rnddata.c"
+						RelativePath=".\src\anim\timer.c"
 						>
 					</File>
 					<File
-						RelativePath=".\src\anim\rnd\rndprim.c"
+						RelativePath=".\src\anim\unit.c"
 						>
 					</File>
 				</Filter>
-			</Filter>
-			<Filter
-				Name="Windows.Depended"
-				>
-				<File
-					RelativePath=".\src\win\main.c"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="Math.Support"
@@ -255,6 +227,14 @@
 				</File>
 				<File
 					RelativePath=".\src\units\units.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Windows.Depended"
+				>
+				<File
+					RelativePath=".\src\win\main.c"
 					>
 				</File>
 			</Filter>

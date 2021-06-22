@@ -15,9 +15,9 @@
 
 /*** References ***/
 
-extern HWND TT6_hRndWnd;                 /* Work window handle */
-extern HDC TT6_hRndDC;                   /* Work window memory device context*/
-extern HGLRC TT6_hRndGLRC;               /* OpenGL rendering context */
+extern HWND TT6_hRndWnd;        /* Work window handle */
+extern HDC TT6_hRndDCFrame;     /* Work window memory device context*/
+extern HBITMAP TT6_hRndBmFrame; /* Work window background bitmap handle */
 extern INT TT6_RndFrameW, TT6_RndFrameH; /* Work window size */
 
 extern DBL
@@ -57,7 +57,7 @@ VOID TT6_RndStart( VOID );
  * RETURNS: None.
  */
 VOID TT6_RndEnd( VOID );
-VOID TT6_RndCopyFrame( VOID );
+VOID TT6_RndCopyFrame( HDC hDC );
 VOID TT6_RndStart( VOID );
 VOID TT6_RndEnd( VOID );
 
@@ -85,28 +85,18 @@ VOID TT6_RndCamSet( VEC Loc, VEC At, VEC Up );
 /* Vertex representation type */
 typedef struct tagtt6VERTEX
 {
-  VEC P;   /* vertex position */
-  VEC2 T;  /* texture coordinate */
-  VEC N;   /* normal */
-  VEC4 C;  /* colour (r,g,b,a) */
+  VEC P;  /* Vertex position */
 } tt6VERTEX;
-
 
 /* Primitive representation type */
 typedef struct tagtt6PRIM
 {
-  INT 
-    Va,              /* OpenGL vertex array number */
-    VBuf,            /* OpenGL vertex buffer number */
-    IBuf;            /* OpenGL index buffer number */
-  INT NumOfElements;
-  /* have to delete later */
-    tt6VERTEX *V; /* Vertex attributes array */
-    INT NumOfV;   /* Number of vertices */
+  tt6VERTEX *V; /* Vertex attributes array */
+  INT NumOfV;   /* Number of vertices */
 
-    INT *I;       /* Index array (for trimesh – by 3 ones) */
-    INT NumOfI;   /* Number of indices */
-  /**/
+  INT *I;       /* Index array (for trimesh – by 3 ones) */
+  INT NumOfI;   /* Number of indices */
+
   MATR Trans;   /* Additional transformation matrix */
 } tt6PRIM;
 

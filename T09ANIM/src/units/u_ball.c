@@ -6,7 +6,6 @@
 
 #include "units.h"
 #if 0
-
 typedef struct
 {
   TT6_UNIT_BASE_FIELDS;

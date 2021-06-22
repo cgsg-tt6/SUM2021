@@ -1,10 +1,14 @@
 /* FILE NAME : rndbase.c
  * PROGRAMMER: TT6
- * DATE      : 18.06.2021
+ * DATE      : 21.06.2021
  * PURPOSE   : 3D animation rendering global data module.
  */
 
 #include "rnd.h"
+#include <wglew.h>
+#include <gl/wglext.h>
+
+#pragma comment (lib, "opengl32")
 
 VOID TT6_RndInit( HWND hWnd )
 {

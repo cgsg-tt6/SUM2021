@@ -18,7 +18,7 @@ INT P[MAX];
 BOOL IsParity = TRUE;
 
 DBL Determinant = 0;
-
+                                             
 
 BOOL LoadMatrix( CHAR *FileName )
 {
@@ -100,10 +100,8 @@ VOID Mass( INT N )
   for (i = 0; i < N; i++)
   {
     P[i] = i;
-    printf("p%d\n", P[i]);
   }
   Go(0);   
-  printf("p%d\n", P[i]);
 }
   /* Permutation function */
 

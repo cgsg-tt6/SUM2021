@@ -10,7 +10,7 @@ typedef struct tagtt6UNIT_CTRL tt6UNIT_CTRL;
 struct tagtt6UNIT_CTRL
 {
   TT6_UNIT_BASE_FIELDS;
-  /* tt6PRIM Ctrl; */
+  tt6PRIM Ctrl;
   VEC 
     CamLoc, Dir, At, Right;
   INT Speed;
@@ -50,6 +50,7 @@ static VOID TT6_UnitClose( tt6UNIT_CTRL *Uni, tt6ANIM *Ani )
  */
 static VOID TT6_UnitResponse( tt6UNIT_CTRL *Uni, tt6ANIM *Ani )
 {
+  /* if (VazFlag) */
   if ((Ani->Keys[VK_UP]) || (Ani->Keys[VK_DOWN]))
   {
     Uni->CamLoc.Y += Ani->DeltaTime * Uni->Speed * (Ani->Keys[VK_UP] - Ani->Keys[VK_DOWN]);
@@ -67,8 +68,6 @@ static VOID TT6_UnitResponse( tt6UNIT_CTRL *Uni, tt6ANIM *Ani )
  */
 static VOID TT6_UnitRender( tt6UNIT_CTRL *Uni, tt6ANIM *Ani )
 {
-  //VEC CamLoc, CamDir, CamUp;
-
   //TT6_RndMatrView = MatrView(CamLoc, CamDir, CamUp);
   TT6_RndMatrVP = MatrMulMatr(TT6_RndMatrView, TT6_RndMatrProj);
 } /* End of 'TT6_UnitRender' function */
@@ -96,7 +95,6 @@ tt6UNIT * TT6_UnitControl( VOID )
 
   return Uni;
 } /* End of 'TT6_UnitControl' function */
-
 
 #if 0
 static VOID TT6_UnitResponse( tt6UNIT_CAM *Uni, tt6ANIM *Ani )

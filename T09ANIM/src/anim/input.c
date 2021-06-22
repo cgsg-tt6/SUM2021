@@ -66,6 +66,11 @@ static VOID TT6_AnimMouseResponse( VOID )
   /* Absolytnue znacheniya */
   TT6_Anim.Mx = pt.x;
   TT6_Anim.My = pt.y;
+
+  TT6_Anim.Mdz = TT6_MouseWheel;
+  TT6_Anim.Mz += TT6_MouseWheel;
+  TT6_MouseWheel = 0;
+
 } /* End of 'TT6_AnimMouseResponse' function */
 
 static VOID TT6_AnimJoystickInit( VOID )

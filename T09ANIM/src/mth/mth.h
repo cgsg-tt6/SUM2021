@@ -17,28 +17,28 @@
 
 /* bazovyu veschestvennyu tip */
 typedef DOUBLE DBL;
-typedef double FLT;
+typedef FLOAT FLT;
 
 /* тип для вектора в простанстве */
 typedef struct tagVEC
 {
-  DBL X, Y, Z;
+  FLT X, Y, Z;
 } VEC;
 
 /* Transformation matrix representation type */
 typedef struct tagMATR
 {
-  DBL A[4][4]; /* Matrix elements */
+  FLT A[4][4]; /* Matrix elements */
 } MATR;
 
-__inline VEC VecSet( DBL X, DBL Y, DBL Z )
+__inline VEC VecSet( FLT X, FLT Y, FLT Z )
 {
   VEC v = {X, Y, Z};
 
   return v;
 } /* End of 'VecSet' function */
 
-__inline VEC VecSet1( DBL X )
+__inline VEC VecSet1( FLT X )
 {
   VEC v;
 
@@ -61,12 +61,12 @@ __inline VEC VecSubVec( VEC V1, VEC V2 ) /* V1 – V2 */
   return VecSet(V1.X - V2.X, V1.Y - V2.Y, V1.Z - V2.Z);
 } /* End of 'VecSubVec' function */
 
-__inline VEC VecMulNum( VEC V1, DBL N ) /*  V1 * N */
+__inline VEC VecMulNum( VEC V1, FLT N ) /*  V1 * N */
 {
   return VecSet(V1.X * N, V1.Y * N, V1.Z * N);
 } /* End of 'VecMulNum' function */
 
-__inline VEC VecDivNum( VEC V1, DBL N ) /*  V1 / N */
+__inline VEC VecDivNum( VEC V1, FLT N ) /*  V1 / N */
 {
   N = 1 / N;
   return VecMulNum(V1, N);
@@ -78,7 +78,7 @@ __inline VEC VecNeg( VEC V )             /*  -V */
 } /* End of 'VecNeg' function */
 
 /* (vec; vec) */
-__inline DBL VecDotVec( VEC V1, VEC V2 )
+__inline FLT VecDotVec( VEC V1, VEC V2 )
 {
   return V1.X * V2.X + V1.Y * V2.Y + V1.Z * V2.Z;
 } /* End of 'VecDotVec' function */
@@ -95,35 +95,35 @@ __inline VEC VecCrossVec( VEC V1, VEC V2 )
   return v;
 } /* End of 'VecCrossVec' function */
 
-__inline DBL VecLen2( VEC V )
+__inline FLT VecLen2( VEC V )
 {
   return VecDotVec(V, V);
 } /* End of 'VecLen' function */
 
  /* End of 'VecLen2' function */
 
-__inline DBL VecLen( VEC V )  /* |V| */
+__inline FLT VecLen( VEC V )  /* |V| */
 {
-  DBL len = VecDotVec(V, V);
+  FLT len = VecDotVec(V, V);
 
   if (len == 1 || len == 0)
     return len;
-  return sqrt(len);
+  return sqrtf(len);
 } /* End of 'VecLen' function */
 
 __inline VEC VecNormalize( VEC V )   /* V/|V| */
 {
-  DBL len = VecDotVec(V, V);
+  FLT len = VecDotVec(V, V);
 
   if (len == 1 || len == 0)
     return V;
-  return VecDivNum(V, sqrt(len));
+  return VecDivNum(V, sqrtf(len));
 } /* End of 'VecNormalize' function */
 
 __inline VEC VecMulMatr( VEC V, MATR M )
 {
   VEC v;
-  DBL w;
+  FLT w;
 
   w = V.X * M.A[0][3] + V.Y * M.A[1][3] + V.Z * M.A[2][3] + M.A[3][3];
   v.X = (V.X * M.A[0][0] + V.Y * M.A[1][0] + V.Z * M.A[2][0] + M.A[3][0]) / w;
@@ -208,9 +208,9 @@ __inline MATR MatrScale( VEC S )
   return m;
 } /* End of 'MatrScale' function */
 
-__inline MATR MatrRotate( DBL AngleInDegree, VEC R )
+__inline MATR MatrRotate( FLT AngleInDegree, VEC R )
 {
-  DBL A = D2R(AngleInDegree), si = sin(A), co = cos(A);
+  FLT A = D2R(AngleInDegree), si = sin(A), co = cos(A);
   VEC V = VecNormalize(R);
   MATR M = 
   {
@@ -231,9 +231,9 @@ __inline MATR MatrRotate( DBL AngleInDegree, VEC R )
   return M;
 } /* End of 'MatrRotate' function */
 
-__inline MATR MatrRotateX( DBL AngleInDegree )
+__inline MATR MatrRotateX( FLT AngleInDegree )
 {
-  DBL a = D2R(AngleInDegree), s = sin(a), c = cos(a);
+  FLT a = D2R(AngleInDegree), s = sin(a), c = cos(a);
   MATR m =
   {
     {
@@ -247,9 +247,9 @@ __inline MATR MatrRotateX( DBL AngleInDegree )
   return m;
 } /* End of 'MatrRotateX' function */
 
-__inline MATR MatrRotateY( DBL AngleInDegree )
+__inline MATR MatrRotateY( FLT AngleInDegree )
 {
-  DBL a = D2R(AngleInDegree), s = sin(a), c = cos(a);
+  FLT a = D2R(AngleInDegree), s = sin(a), c = cos(a);
   MATR m =
   {
     {
@@ -263,9 +263,9 @@ __inline MATR MatrRotateY( DBL AngleInDegree )
   return m;
 } /* End of 'MatrRotateY' function */
 
-__inline MATR MatrRotateZ( DBL AngleInDegree )
+__inline MATR MatrRotateZ( FLT AngleInDegree )
 {
-  DBL a = D2R(AngleInDegree), s = sin(a), c = cos(a);
+  FLT a = D2R(AngleInDegree), s = sin(a), c = cos(a);
   MATR m =
   {
     {
@@ -306,7 +306,7 @@ __inline MATR MatrMulMatr5( MATR M1, MATR M2, MATR M3, MATR M4, MATR M5 )
   return MatrMulMatr(MatrMulMatr4(M1, M2, M3, M4), M5);
 } /* End of 'MatrMulMatr5' function */
 
-__inline MATR MatrTranspose( MATR M )                              /********* ********/
+__inline MATR MatrTranspose( MATR M )
 {
   INT i, j;
   MATR r = {{{0}}};
@@ -317,15 +317,15 @@ __inline MATR MatrTranspose( MATR M )                              /********* **
   return r;
 } /* End of 'MatrMulMatr' function */
 
-__inline DBL MatrDeterm3x3( DBL A11, DBL A12, DBL A13,
-                   DBL A21, DBL A22, DBL A23,
-                   DBL A31, DBL A32, DBL A33 )
+__inline FLT MatrDeterm3x3( FLT A11, FLT A12, FLT A13,
+                   FLT A21, FLT A22, FLT A23,
+                   FLT A31, FLT A32, FLT A33 )
 {
   return A11 * A22 * A33 + A12 * A23 * A31 + A13 * A21 * A32 -
          A11 * A23 * A32 - A12 * A21 * A33 - A13 * A22 * A31;
 } /* End of 'MatrDeterm3x3' function */
 
-__inline DBL MatrDeterm( MATR M )
+__inline FLT MatrDeterm( MATR M )
 {
   return
     +M.A[0][0] * MatrDeterm3x3(M.A[1][1], M.A[1][2], M.A[1][3],
@@ -344,7 +344,7 @@ __inline DBL MatrDeterm( MATR M )
 
 __inline MATR MatrInverse( MATR M )
 {
-  DBL det = MatrDeterm(M);
+  FLT det = MatrDeterm(M);
   MATR r;
 
   if (det == 0)
@@ -426,7 +426,7 @@ __inline MATR MatrInverse( MATR M )
 /*__inline MATR MatrInverse( MATR M )
 {
   MATR r;
-  DBL det = MatrDeterm(M);
+  FLT det = MatrDeterm(M);
   INT s, i, j, P[][3] = {{1, 2, 3}, {0, 2, 3}, {0, 1, 3}, {0, 1, 2}};
 
   if (det == 0)
@@ -460,7 +460,7 @@ __inline MATR MatrView( VEC Loc, VEC At, VEC Up1 )
   return m;
 } /* End of 'MatrView' function */
 
-__inline MATR MatrFrustum( DBL l, DBL r, DBL b, DBL t, DBL n, DBL f )
+__inline MATR MatrFrustum( FLT l, FLT r, FLT b, FLT t, FLT n, FLT f )
 {
   MATR m =
   {
@@ -475,7 +475,7 @@ __inline MATR MatrFrustum( DBL l, DBL r, DBL b, DBL t, DBL n, DBL f )
   return m;
 } /* End of 'MatrFrustum' function */
 
-/*__inline MATR MatrOrtho( DBL left, DBL right, DBL bottom, DBL top, DBL near, DBL far )
+/*__inline MATR MatrOrtho( FLT left, FLT right, FLT bottom, FLT top, FLT near, FLT far )
 {
   MATR m =
   {

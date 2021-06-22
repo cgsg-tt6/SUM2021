@@ -16,11 +16,11 @@ VOID TT6_AnimInit( HWND hWnd )
   /* Fill animation context */
   TT6_Anim.hWnd = hWnd;
   TT6_RndInit(hWnd);
-  TT6_Anim.hDC = TT6_hRndDCFrame;
   TT6_Anim.W = TT6_RndFrameW;
   TT6_Anim.H = TT6_RndFrameH;
 
   TT6_TimerInit();
+  TT6_InputInit();
 } /* 'TT6_AnimInit' */
 
 VOID TT6_AnimClose( VOID )
@@ -32,6 +32,7 @@ VOID TT6_AnimClose( VOID )
     TT6_Anim.Units[i]->Close(TT6_Anim.Units[i], &TT6_Anim);
     free(TT6_Anim.Units[i]);
   }
+  TT6_Anim.NumOfUnits = 0;
   TT6_RndClose();
   memset(&TT6_Anim, 0, sizeof(tt6ANIM));
 }
@@ -43,11 +44,12 @@ VOID TT6_AnimResize( INT W, INT H )
   TT6_Anim.H = H;
 
   TT6_AnimRender();
+  TT6_AnimCopyFrame();
 }
 
-VOID TT6_AnimCopyFrame( HDC hDC )
+VOID TT6_AnimCopyFrame( VOID )
 {
-  TT6_RndCopyFrame(hDC);
+  TT6_RndCopyFrame();
 }
 
 VOID TT6_AnimRender( VOID )
@@ -55,6 +57,7 @@ VOID TT6_AnimRender( VOID )
   INT i;
 
   TT6_TimerResponse();
+  TT6_InputResponse();
 
   for (i = 0; i < TT6_Anim.NumOfUnits; i++)
     TT6_Anim.Units[i]->Response(TT6_Anim.Units[i], &TT6_Anim);
@@ -115,6 +118,5 @@ VOID TT6_AnimUnitAdd( tt6UNIT *Uni )
   if (TT6_Anim.NumOfUnits < TT6_MAX_UNITS)
     TT6_Anim.Units[TT6_Anim.NumOfUnits++] = Uni, Uni->Init(Uni, &TT6_Anim);
 }
-
 
 /* END OF 'anim.c' FILE */

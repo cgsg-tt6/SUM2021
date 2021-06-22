@@ -58,7 +58,6 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevTnstance,
       WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT, CW_USEDEFAULT,
       CW_USEDEFAULT, CW_USEDEFAULT,
-      /* 100, 100, 800, 500, */
       NULL,
       NULL,
       hInstance,
@@ -68,6 +67,7 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevTnstance,
   
   /*** Create units ***/
   TT6_AnimUnitAdd(TT6_UnitCreateCow());
+  TT6_AnimUnitAdd(TT6_UnitControl());
 
   /* Message loop */
   while (TRUE)
@@ -78,7 +78,10 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevTnstance,
       DispatchMessage(&msg);
     }
     else
-      SendMessage(hWnd, WM_TIMER, 30, 0);
+    {
+      TT6_AnimRender();
+      TT6_AnimCopyFrame();
+    }
 
   return 30;
 } /* End of 'WinMain' function */
@@ -101,6 +104,7 @@ LRESULT CALLBACK TT6_MyWindowFunc( HWND hWnd, UINT Msg,
 { 
   HDC hDC;
   PAINTSTRUCT ps;
+  PIXELFORMATDESCRIPTOR pfd = {0};
 
   switch (Msg)
   {
@@ -110,33 +114,25 @@ LRESULT CALLBACK TT6_MyWindowFunc( HWND hWnd, UINT Msg,
     return 0;
 
   case WM_CREATE:
-    SetTimer(hWnd, 30, 1, NULL);
     TT6_AnimInit(hWnd);
-    TT6_InputInit(hWnd);
+    SetTimer(hWnd, 30, 1, NULL);
     return 0;
 
   case WM_SIZE:
     /* Redraw frame */
     TT6_AnimResize(LOWORD(lParam), HIWORD(lParam));
-    SendMessage(hWnd, WM_TIMER, 30, 0);
     return 0;
 
   case WM_TIMER:
     /* Draw content */
     TT6_AnimRender();
-
-    /* Send repaint message */
-    /* InvalidateRect(hWnd, NULL, FALSE); */
-    hDC = GetDC(hWnd);
-    /* Copy frame to the window */
-    TT6_AnimCopyFrame(hDC);
-    ReleaseDC(hWnd, hDC);
-    break;
+    TT6_AnimCopyFrame();
+    return 0;
     
   case WM_PAINT:
     hDC = BeginPaint(hWnd, &ps);
     /* Copy frame to window */
-    TT6_AnimCopyFrame(hDC);
+    TT6_AnimCopyFrame();
     EndPaint(hWnd, &ps);
     return 0;
 
@@ -145,13 +141,17 @@ LRESULT CALLBACK TT6_MyWindowFunc( HWND hWnd, UINT Msg,
       SendMessage(hWnd, WM_CLOSE, 0, 0);
     return 0;
 
-  case WM_SYSKEYDOWN:
+  /* case WM_SYSKEYDOWN:
     if (wParam == VK_RETURN)
     {
-      /* FlipFullScreen(hWnd); */
+      FlipFullScreen(hWnd);
       return 0;
     }
-    break;
+    break; */
+
+  case WM_MOUSEWHEEL:
+    TT6_MouseWheel += (SHORT)HIWORD(wParam);
+    return 0;
 
   case WM_ERASEBKGND:
     return 1;

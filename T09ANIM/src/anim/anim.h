@@ -21,7 +21,6 @@ typedef struct tagtt6UNIT tt6UNIT;
 typedef struct tagtt6ANIM
 {
   HWND hWnd;
-  HDC hDC;
   INT W, H;
 
   tt6UNIT *Units[TT6_MAX_UNITS];
@@ -40,6 +39,12 @@ typedef struct tagtt6ANIM
 
   INT Mx, My, Mz, Mdx, Mdy, Mdz; /* Mouse data */
 
+  BYTE
+    JBut[32], JButOld[32], JButClick[32]; /* Joystick button states */
+  INT JPov;                               /* Joystick point-of-view control [-1,0..7] */
+  DBL
+    JX, JY, JZ, JR;                       /* Joystick axes */
+
 } tt6ANIM;
 
 typedef struct tagtt6UNIT tt6UNIT;
@@ -49,11 +54,12 @@ struct tagtt6UNIT
 };
 
 extern tt6ANIM TT6_Anim;
+extern INT TT6_MouseWheel;
 
 VOID TT6_AnimInit( HWND hWnd );
 VOID TT6_AnimClose( VOID );
 VOID TT6_AnimResize( INT W, INT H );
-VOID TT6_AnimCopyFrame( HDC hDC );
+VOID TT6_AnimCopyFrame( VOID );
 VOID TT6_AnimRender( VOID );
 VOID TT6_AnimFlipFullScreen( VOID );
 
@@ -63,7 +69,7 @@ tt6UNIT * TT6_AnimUnitCreate( INT Size );
 VOID TT6_TimerInit( VOID );
 VOID TT6_TimerResponse( VOID );
 
-VOID TT6_InputInit( HWND hWnd );
+VOID TT6_InputInit( VOID );
 VOID TT6_InputResponse( VOID );
 
 #endif /* __anim_h_ */

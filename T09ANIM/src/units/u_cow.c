@@ -4,6 +4,8 @@
  * PURPOSE   : Draw cow unit.
  */
 
+#include <stdio.h>
+
 #include "units.h"
 
 typedef struct tagtt6UNIT_COW tt6UNIT_COW;
@@ -24,7 +26,7 @@ struct tagtt6UNIT_COW
  */
 static VOID TT6_UnitInit( tt6UNIT_COW *Uni, tt6ANIM *Ani )
 {
-  TT6_RndPrimLoad(&Uni->Cow, "cow.obj");
+  TT6_RndPrimLoad(&Uni->Cow, "BIN/MODELS/cow.obj");
 } /* End of 'TT6_UnitInit' function */
 
 /* Unit deinitialization function.
@@ -50,6 +52,10 @@ static VOID TT6_UnitClose( tt6UNIT_COW *Uni, tt6ANIM *Ani )
  */
 static VOID TT6_UnitResponse( tt6UNIT_COW *Uni, tt6ANIM *Ani )
 {
+  CHAR Buf[100];
+
+  sprintf(Buf, "FPS: %.3f", Ani->FPS);
+  SetWindowText(Ani->hWnd, Buf);
 } /* End of 'TT6_UnitResponse' function */
 
 /* Unit render function.
@@ -90,15 +96,3 @@ tt6UNIT * TT6_UnitCreateCow( VOID )
 
   return Uni;
 } /* End of 'TT6_UnitCreateCow' function */
-
-/*
-typedef struct tagtt6UNIT_COW tt6UNIT_COW;
-struct tagtt6UNIT_COW
-{
-  VOID (*Init)( tt6UNIT_COW *Uni, ANIM *Ani );
-  VOID (*Close)( tt6UNIT_COW *Uni, ANIM *Ani );
-  VOID (*Response)( tt6UNIT_COW *Uni, ANIM *Ani );
-  VOID (*Render)( tt6UNIT_COW *Uni, ANIM *Ani ); 
-}; */
-/*
- */

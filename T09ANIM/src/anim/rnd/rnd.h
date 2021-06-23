@@ -151,6 +151,51 @@ BOOL TT6_RndPrimLoad( tt6PRIM *Pr, CHAR *FileName );
 
 BOOL TT6_RndPrintCreatePlane( tt6PRIM *Pr, VEC P, VEC Du, VEC Dv, INT SplitW, INT SplitH );
 
+/***
+ * SHADERS
+ ***/
+
+/* Delete shader program function.
+ * ARGUMENTS:
+ *   - shader program Id:
+ *       INT ProgId;
+ * RETUNS: None.
+ */
+VOID TT6_RndShdFree( INT ProgId );
+
+/***
+ * Shaders stock functions
+ ***/
+
+
+
+/* Shader stock initialization function.
+ * ARGUMENTS: None.
+ * RETURNS: None.
+ */
+VOID TT6_RndShadersInit( VOID );
+
+/* Shader stock deinitialization function.
+ * ARGUMENTS: None.
+ * RETURNS: None.
+ */
+VOID TT6_RndShadersClose( VOID );
+
+/* Shader add to stock function.
+ * ARGUMENTS:
+ *   - shader folder prefix:
+ *       CHAR *FileNamePrefix;
+ * RETURNS:
+ *   (INT) shader number in stock.
+ */
+INT TT6_RndShaderAdd( CHAR *FileNamePrefix );
+
+/* Shader stock update function.
+ * ARGUMENTS: None.
+ * RETURNS: None.
+ */
+VOID TT6_RndShadersUpdate( VOID );
+
 #endif /*  __rnd_h_ */
 
 /* END OF 'rnd.h' FILE */

@@ -12,14 +12,74 @@
 
 VOID TT6_RndInit( HWND hWnd )
 {
-  HDC hDC;
+  INT i, nums;
+  PIXELFORMATDESCRIPTOR pfd = {0};
+  HGLRC hRC;
+  INT PixelAttribs[] =
+  {
+    WGL_DRAW_TO_WINDOW_ARB, TRUE,
+    WGL_SUPPORT_OPENGL_ARB, TRUE,
+    WGL_DOUBLE_BUFFER_ARB, TRUE,
+    WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
+    WGL_ACCELERATION_ARB, WGL_FULL_ACCELERATION_ARB,
+    WGL_COLOR_BITS_ARB, 32,
+    WGL_DEPTH_BITS_ARB, 32,
+    0
+  };
+
+  INT ContextAttribs[] =
+  {
+    WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
+    WGL_CONTEXT_MINOR_VERSION_ARB, 6,
+    WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB,
+                                  /* WGL_CONTEXT_CORE_PROFILE_BIT_ARB, */
+    0
+  };
 
   TT6_hRndWnd = hWnd;
-  TT6_hRndDCFrame = NULL;
-  /* Prepare frame compatible device context */
-  hDC = GetDC(TT6_hRndWnd);
-  TT6_hRndDCFrame = CreateCompatibleDC(hDC);
-  ReleaseDC(TT6_hRndWnd, hDC);
+  TT6_hRndDC = GetDC(hWnd);
+
+  /* OpenGL init: pixel format setup */
+  pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
+  pfd.nVersion = 1;
+  pfd.dwFlags = PFD_DOUBLEBUFFER | PFD_SUPPORT_OPENGL;
+  pfd.cColorBits = 32;
+  pfd.cDepthBits = 32;
+  i = ChoosePixelFormat(TT6_hRndDC, &pfd);
+  DescribePixelFormat(TT6_hRndDC, i, sizeof(PIXELFORMATDESCRIPTOR), &pfd);
+  SetPixelFormat(TT6_hRndDC, i, &pfd);
+
+  /* OpenGL init: setup rendering context */
+  TT6_hRndGLRC = wglCreateContext(TT6_hRndDC);
+  wglMakeCurrent(TT6_hRndDC, TT6_hRndGLRC);
+
+  /* Initializing GLEW library */
+  if (glewInit() != GLEW_OK)
+  {
+    MessageBox(TT6_hRndWnd, "Error extensions initializing", "Error",
+      MB_ICONERROR | MB_OK);
+    exit(0);
+  }
+
+  if (!(GLEW_ARB_vertex_shader && GLEW_ARB_fragment_shader))
+  {
+    MessageBox(TT6_hRndWnd, "Error: no shaders support", "Error", MB_ICONERROR | MB_OK);
+    exit(0);
+  }
+
+  /* Enable a new OpenGL profile support */
+  wglChoosePixelFormatARB(TT6_hRndDC, PixelAttribs, NULL, 1, &i, &nums);
+  hRC = wglCreateContextAttribsARB(TT6_hRndDC, NULL, ContextAttribs);
+
+  wglMakeCurrent(NULL, NULL);
+  wglDeleteContext(TT6_hRndGLRC);
+
+  TT6_hRndGLRC = hRC;
+  wglMakeCurrent(TT6_hRndDC, TT6_hRndGLRC);
+  /* Set default OpenGL parameters */
+  glEnable(GL_DEPTH_TEST);
+  glClearColor(0.30f, 0.47f, 0.8f, 1);
+  wglSwapIntervalEXT(0);
 
   /* Render parameters setup */
   TT6_RndProjSize = 0.1;
@@ -36,10 +96,9 @@ VOID TT6_RndInit( HWND hWnd )
  */
 VOID TT6_RndClose( VOID )
 {
-  if (TT6_hRndBmFrame != NULL)
-    DeleteObject(TT6_hRndBmFrame);
-  DeleteDC(TT6_hRndDCFrame);
-  /* delete all the resourses */
+  wglMakeCurrent(NULL, NULL);
+  wglDeleteContext(TT6_hRndGLRC);
+  ReleaseDC(TT6_hRndWnd, TT6_hRndDC);
 } /* End of 'TT6_RndClose' function */
 
 /* Render subsystem frame resize function.
@@ -50,17 +109,7 @@ VOID TT6_RndClose( VOID )
  */
 VOID TT6_RndResize( INT W, INT H )
 {
-  HDC hDC;
-
-  /* Prepare back buffer bitmap */
-  if (TT6_hRndBmFrame != NULL)
-    DeleteObject(TT6_hRndBmFrame);
-
-  hDC = GetDC(TT6_hRndWnd);
-  TT6_hRndBmFrame = CreateCompatibleBitmap(hDC, W, H);
-  ReleaseDC(TT6_hRndWnd, hDC);
-
-  SelectObject(TT6_hRndDCFrame, TT6_hRndBmFrame);
+  glViewport(0, 0, W, H);
 
   /* Setup projection */
   TT6_RndFrameW = W;
@@ -70,10 +119,10 @@ VOID TT6_RndResize( INT W, INT H )
   TT6_RndProjSet();
 } /* End of 'TT6_RndResize' function */
 
-VOID TT6_RndCopyFrame( HDC hDC )
+VOID TT6_RndCopyFrame( VOID )
 {
-  BitBlt(hDC, 0, 0, TT6_RndFrameW, TT6_RndFrameH,
-         TT6_hRndDCFrame, 0, 0, SRCCOPY);
+  /// SwapBuffers(TT6_hRndDC);
+  wglSwapLayerBuffers(TT6_hRndDC, WGL_SWAP_MAIN_PLANE);
 } /* End of 'TT6_RndCopyFrame' function */
 
 /* Rendering start draw frame function.
@@ -82,17 +131,7 @@ VOID TT6_RndCopyFrame( HDC hDC )
  */
 VOID TT6_RndStart( VOID )
 {
-  /* Clear frame */
-  SelectObject(TT6_hRndDCFrame, GetStockObject(NULL_PEN));
-  SelectObject(TT6_hRndDCFrame, GetStockObject(DC_BRUSH));
-  SetDCBrushColor(TT6_hRndDCFrame, RGB(255, 210, 210));
-  Rectangle(TT6_hRndDCFrame, 0, 0, TT6_RndFrameW + 1, TT6_RndFrameH + 1);
-
-  /* Set default pen */
-  SelectObject(TT6_hRndDCFrame, GetStockObject(DC_PEN));
-  SelectObject(TT6_hRndDCFrame, GetStockObject(NULL_BRUSH));
-  SetDCPenColor(TT6_hRndDCFrame, RGB(200, 130, 200));
-  /* Ellipse(TT6_hRndDCFrame, TT6_RndFrameW / 2 - 100, TT6_RndFrameH / 2 - 100, TT6_RndFrameW / 2 + 100, TT6_RndFrameH / 2 + 100); */
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 } /* End of 'TT6_RndStart' function */
 
 /* Rendering finalize draw frame function.
@@ -101,7 +140,7 @@ VOID TT6_RndStart( VOID )
  */
 VOID TT6_RndEnd( VOID )
 {
-  /* Nothing for now */
+  glFinish();
 } /* End of 'TT6_RndEnd' function */
 
 /* Setup rendering project function.

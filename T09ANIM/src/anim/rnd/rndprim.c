@@ -99,7 +99,8 @@ VOID TT6_RndPrimFree( tt6PRIM *Pr )
  */
 VOID TT6_RndPrimDraw( tt6PRIM *Pr, MATR World )
 {
-  MATR wvp = MatrMulMatr3(Pr->Trans, World, TT6_RndMatrVP);
+  /* MATR wvp = MatrMulMatr3(Pr->Trans, World, TT6_RndMatrVP); */
+  MATR wvp = MatrMulMatr(World, MatrMulMatr(TT6_RndMatrView, TT6_RndMatrProj)); /// <------ here we stopped
 
   /* Send matrix to OpenGL /v.1.0 */
   glLoadMatrixf(wvp.A[0]);
@@ -113,7 +114,7 @@ VOID TT6_RndPrimDraw( tt6PRIM *Pr, MATR World )
   if (Pr->IBuf == 0)
   {
     glBindVertexArray(Pr->VA);
-    /* otrisovka draw */
+    /* otrisovka (draw) */
     glDrawArrays(GL_TRIANGLES, 0, Pr->NumOfElements);
     /* turn off buff vertexes array */
     glBindVertexArray(0);

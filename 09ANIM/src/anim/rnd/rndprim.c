@@ -17,31 +17,55 @@
  * ARGUMENTS:
  *   - primitive pointer:
  *       tt6PRIM *Pr;
- *   - number of vertexes and indexes:
- *       INT NoofV, NoofI;
- * RETURNS:
- *   (BOOL) TRUE if success, FALSE if not enough memory.
+ *   - vertex attributes array:
+ *       tt6VERTEX *V;
+ *   - number of vertices:
+ *       INT NumOfV;
+ *   - index array (for trimesh – by 3 ones, may be NULL)
+ *       INT *I;
+ *   - number of indices
+ *       INT NumOfI;
+ * RETURNS: None.
  */
-BOOL TT6_RndPrimCreate( tt6PRIM *Pr, INT NoofV, INT NoofI )
+VOID TT6_RndPrimCreate( tt6PRIM *Pr, tt6VERTEX *V, INT NumOfV, INT *I, INT NumOfI )
 {
-  INT size;
-  /* Set all primitive data fields to 0 */
   memset(Pr, 0, sizeof(tt6PRIM));   /* <-- <string.h> */
-  /* Calculate memory size for primitive data */
-  size = sizeof(tt6VERTEX) * NoofV + sizeof(INT) * NoofI;
-  /* Allocate memory */
-  if ((Pr->V = malloc(size)) == NULL)
-    return FALSE;
-  /* Fill all allocated memory by 0 */
-  memset(Pr->V, 0, size);
-  /* Set index array pointer */
-  Pr->I = (INT *)(Pr->V + NoofV);
-  /* Store data sizes */
-  Pr->NumOfV = NoofV;
-  Pr->NumOfI = NoofI;
-  Pr->Trans = MatrIdentity();
 
-  return TRUE;
+  if (V != NULL && NumOfV != 0)
+  {
+    glGenBuffers(1, &Pr->VBuf);
+    glGenVertexArrays(1, &Pr->VA);
+
+    glBindVertexArray(Pr->VA);
+    glBindBuffer(GL_ARRAY_BUFFER, Pr->VBuf);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(tt6VERTEX) * NumOfV, V, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, FALSE, sizeof(tt6VERTEX),
+                          (VOID *)0); /* position */
+    glVertexAttribPointer(1, 2, GL_FLOAT, FALSE, sizeof(tt6VERTEX),
+                          (VOID *)sizeof(VEC)); /* texture coordinates */
+    glVertexAttribPointer(2, 3, GL_FLOAT, FALSE, sizeof(tt6VERTEX),
+                          (VOID *)(sizeof(VEC) + sizeof(VEC2))); /* normal */
+    glVertexAttribPointer(3, 4, GL_FLOAT, FALSE, sizeof(tt6VERTEX),
+                          (VOID *)(sizeof(VEC) * 2 + sizeof(VEC2))); /* color */
+
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
+    glEnableVertexAttribArray(3);
+    glBindVertexArray(0);
+  }
+
+  if (I != NULL && NumOfI != 0)
+  {
+    glGenBuffers(1, &Pr->IBuf);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Pr->IBuf);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(INT) * NumOfI, I, GL_STATIC_DRAW);
+    Pr->NumOfElements = NumOfI;
+  }
+  else
+    Pr->NumOfElements = NumOfV;
+  Pr->Trans = MatrIdentity();
 } /* End of 'TT6_RndPrimCreate' function */
 
 /* Primitive free function.
@@ -52,8 +76,16 @@ BOOL TT6_RndPrimCreate( tt6PRIM *Pr, INT NoofV, INT NoofI )
  */
 VOID TT6_RndPrimFree( tt6PRIM *Pr )
 {
-  if (Pr->V != NULL)
-    free(Pr->V);
+  //if (Pr->VA != NULL)
+    //free(Pr->VA);
+  glDeleteBuffers(1, &Pr->IBuf);
+
+  glBindVertexArray(Pr->VA);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glDeleteBuffers(1, &Pr->VBuf);
+  glBindVertexArray(0);
+  glDeleteVertexArrays(1, &Pr->VA);
+
   memset(Pr, 0, sizeof(tt6PRIM));
 } /* End of 'TT6_RndPrimFree' function */
 
@@ -68,33 +100,38 @@ VOID TT6_RndPrimFree( tt6PRIM *Pr )
 VOID TT6_RndPrimDraw( tt6PRIM *Pr, MATR World )
 {
   MATR wvp = MatrMulMatr3(Pr->Trans, World, TT6_RndMatrVP);
-  POINT *pnts;
-  INT i;
 
-  if ((pnts = malloc(sizeof(POINT) * Pr->NumOfV)) == NULL)
-    return; 
-
-  /* Build projection */
-  for (i = 0; i < Pr->NumOfV; i++)
-  {
-    VEC p = VecMulMatr(Pr->V[i].P, wvp);
-
-    pnts[i].x = (INT)((p.X + 1) * TT6_RndFrameW / 2); 
-    pnts[i].y = (INT)((-p.Y + 1) * TT6_RndFrameH / 2);
-  }
+  /* Send matrix to OpenGL /v.1.0 */
+  glLoadMatrixf(wvp.A[0]);
 
   /* Draw triangles */
-  for (i = 0; i < Pr->NumOfI; i += 3)
+  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  //glBegin(GL_TRIANGLES);
+  /*for (i = 0; i < Pr->NumOfElements; i++)
+    glVertex3fv(&Pr->VA[Pr->IBuf[i]].P.X);*/
+  
+  if (Pr->IBuf == 0)
   {
-    MoveToEx(TT6_hRndDCFrame, pnts[Pr->I[i]].x, pnts[Pr->I[i]].y, NULL);
-    LineTo(TT6_hRndDCFrame, pnts[Pr->I[i + 1]].x, pnts[Pr->I[i + 1]].y);
-    LineTo(TT6_hRndDCFrame, pnts[Pr->I[i + 2]].x, pnts[Pr->I[i + 2]].y);
-    LineTo(TT6_hRndDCFrame, pnts[Pr->I[i]].x, pnts[Pr->I[i]].y);
+    glBindVertexArray(Pr->VA);
+    /* otrisovka (draw) */
+    glDrawArrays(GL_TRIANGLES, 0, Pr->NumOfElements);
+    /* turn off buff vertexes array */
+    glBindVertexArray(0);
   }
-  free(pnts);
+  else
+  {
+    glBindVertexArray(Pr->VA);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Pr->IBuf);
+    glDrawElements(GL_TRIANGLES, Pr->NumOfElements, GL_UNSIGNED_INT, NULL);
+    glBindVertexArray(0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  }
+
+  glEnd();
 } /* End of 'TT6_RndPrimDraw' function */
 
-/* ARGUMENTS:
+/* Load primitive from '*.OBJ' file function.
+ * ARGUMENTS:
  *   - pointer to primitive to load:
  *       tt6PRIM *Pr;
  *   - '*.OBJ' file name:
@@ -105,7 +142,9 @@ VOID TT6_RndPrimDraw( tt6PRIM *Pr, MATR World )
 BOOL TT6_RndPrimLoad( tt6PRIM *Pr, CHAR *FileName )
 {
   FILE *F;
-  INT i, nv = 0, nind = 0;
+  INT i, nv = 0, nind = 0, size;
+  tt6VERTEX *V;
+  INT *Ind;
   static CHAR Buf[1000];
 
   memset(Pr, 0, sizeof(tt6PRIM));
@@ -128,11 +167,11 @@ BOOL TT6_RndPrimLoad( tt6PRIM *Pr, CHAR *FileName )
     }
   }
 
-  if (!TT6_RndPrimCreate(Pr, nv, nind))
-  {
-    fclose(F);
+  size = sizeof(tt6VERTEX) * nv + sizeof(INT) * nind;
+  if ((V = malloc(size)) == NULL)
     return FALSE;
-  }
+  Ind = (INT *)(V + nv);
+  memset(V, 0, size);
 
   /* Load primitive */
   rewind(F);
@@ -143,9 +182,12 @@ BOOL TT6_RndPrimLoad( tt6PRIM *Pr, CHAR *FileName )
     if (Buf[0] == 'v' && Buf[1] == ' ')
     {
       DBL x, y, z;
+      /* VEC4 c = {Rnd0(), Rnd0(), Rnd0(), 1}; */
+      VEC4 c = {0};
 
       sscanf(Buf + 2, "%lf%lf%lf", &x, &y, &z);
-      Pr->V[nv++].P = VecSet(x, y, z);
+      V[nv].C = c;
+      V[nv++].P = VecSet(x, y, z);
     }
     else if (Buf[0] == 'f' && Buf[1] == ' ')
     {
@@ -166,44 +208,45 @@ BOOL TT6_RndPrimLoad( tt6PRIM *Pr, CHAR *FileName )
             n1 = nc;
           else
           {
-            Pr->I[nind++] = n0;
-            Pr->I[nind++] = n1;
-            Pr->I[nind++] = nc;
+            Ind[nind++] = n0;
+            Ind[nind++] = n1;
+            Ind[nind++] = nc;
             n1 = nc;
           }
           n++;
         }
     }
   }
-
   fclose(F);
+  TT6_RndPrimCreate(Pr, V, nv, Ind, nind);
+  free(V);
   return TRUE;
 } /* End of 'TT6_RndPrimLoad' function */
 
+#if 0
 BOOL TT6_RndPrimCreateGrid (tt6PRIM *Pr, INT SplitW, INT SplitH)
 {
   INT i, j, k;
-
-  if (!TT6_RndPrimCreate(Pr, SplitW * SplitH, (SplitW - 1) * (SplitH - 1) * 6))
-    return FALSE;
 
   /* Set indexes */
   for (k = 0, i = 0; i < SplitH - 1; i++)
     for (j = 0; j < SplitW - 1; j++)
     {
-      Pr->I[k++] = i * SplitW + j;
-      Pr->I[k++] = i * SplitW + j + 1;
-      Pr->I[k++] = (i + 1) * SplitW + j;
+      Pr->IBuf[k++] = i * SplitW + j;
+      Pr->IBuf[k++] = i * SplitW + j + 1;
+      Pr->IBuf[k++] = (i + 1) * SplitW + j;
 
       
-      Pr->I[k++] = (i + 1) * SplitW + j; 
-      Pr->I[k++] = i * SplitW + j + 1;
-      Pr->I[k++] = (i + 1) * SplitW + j + 1;
+      Pr->IBuf[k++] = (i + 1) * SplitW + j; 
+      Pr->IBuf[k++] = i * SplitW + j + 1;
+      Pr->IBuf[k++] = (i + 1) * SplitW + j + 1;
     }
     return TRUE;
 } /* End of 'TT6_RndPrimCreateGrid' function */
+#endif /* 0 */
 
-/*BOOL TT6_RndPrimCreateSphere( tt6PRIM *Pr, VEC C, DBL R, INT SplitW, INT SplitH )
+/*
+BOOL TT6_RndPrimCreateSphere( tt6PRIM *Pr, VEC C, DBL R, INT SplitW, INT SplitH )
 {
   TT6_RndPrimCreate(Pr, SplitW * SplitH, (SplitW - 1) * (SplitH - 1) * 6);
    vertexes 
@@ -215,6 +258,7 @@ BOOL TT6_RndPrimCreateGrid (tt6PRIM *Pr, INT SplitW, INT SplitH)
     }
 } */
 
+#if 0
 BOOL TT6_RndPrintCreatePlane( tt6PRIM *Pr, VEC P, VEC Du, VEC Dv, INT SplitW, INT SplitH )
 {
   INT i, j;
@@ -225,9 +269,10 @@ BOOL TT6_RndPrintCreatePlane( tt6PRIM *Pr, VEC P, VEC Du, VEC Dv, INT SplitW, IN
   /* set vertexes */
   for (i = 0; i < SplitH; i++)
     for (j = 0; j < SplitW; j++)
-      Pr->V[i * SplitW + j].P =
+      Pr->VA[i * SplitW + j].P =
         VecAddVec3(P, VecMulNum(Du, j / (SplitW - 1.0)), VecMulNum(Dv, i / (SplitH - 1.0)));
     return TRUE;
 } /* End of 'TT6_RndPrimCreatePlane' function */
+#endif /* 0 */
 
 /* END OF 'rndprim.c' FILE */

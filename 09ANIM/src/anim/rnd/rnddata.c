@@ -6,8 +6,8 @@
 #include "rnd.h"
 
 HWND TT6_hRndWnd;
-HDC TT6_hRndDCFrame;
-HBITMAP TT6_hRndBmFrame;
+HDC TT6_hRndDC;
+HGLRC TT6_hRndGLRC;
 INT TT6_RndFrameW, TT6_RndFrameH;
 
 DBL

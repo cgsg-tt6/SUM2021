@@ -17,13 +17,25 @@
 
 /* bazovyu veschestvennyu tip */
 typedef DOUBLE DBL;
-typedef double FLT;
+typedef FLOAT FLT;
 
-/* тип для вектора в простанстве */
+/* type for vecor in space */
 typedef struct tagVEC
 {
   FLT X, Y, Z;
 } VEC;
+
+/* type for vecor on plane */
+typedef struct tagVEC2
+{
+  FLT X, Y;
+} VEC2;
+
+/* type for vecor in 4D reality */
+typedef struct tagVEC4
+{
+  FLT X, Y, Z, W;
+} VEC4;
 
 /* Transformation matrix representation type */
 typedef struct tagMATR
@@ -44,7 +56,37 @@ __inline VEC VecSet1( FLT X )
 
   v.X = v.Y = v.Z = X;
   return v;
-} /* End of 'VecSet' function */
+} /* End of 'VecSet1' function */
+
+__inline VEC4 Vec4Set( FLT A, FLT B, FLT C, FLT D )
+{
+  VEC4 v = {A, B, C, D};
+
+  return v;
+} /* End of 'Vec4Set' function */
+
+__inline VEC4 Vec4Set1( FLT A )
+{
+  VEC4 v;
+
+  v.X = v.Y = v.Z = v.W = A;
+  return v;
+} /* End of 'Vec4Set1' function */
+
+__inline VEC2 Vec2Set( FLT A, FLT B )
+{
+  VEC2 v = {A, B};
+
+  return v;
+} /* End of 'Vec2Set' function */
+
+__inline VEC2 Vec2Set1( FLT A )
+{
+  VEC2 v;
+
+  v.X = v.Y = A;
+  return v;
+} /* End of 'Vec2Set1' function */
 
 __inline VEC VecAddVec( VEC V1, VEC V2 )
 {
@@ -108,7 +150,7 @@ __inline FLT VecLen( VEC V )  /* |V| */
 
   if (len == 1 || len == 0)
     return len;
-  return sqrt(len);
+  return sqrtf(len);
 } /* End of 'VecLen' function */
 
 __inline VEC VecNormalize( VEC V )   /* V/|V| */
@@ -117,7 +159,7 @@ __inline VEC VecNormalize( VEC V )   /* V/|V| */
 
   if (len == 1 || len == 0)
     return V;
-  return VecDivNum(V, sqrt(len));
+  return VecDivNum(V, sqrtf(len));
 } /* End of 'VecNormalize' function */
 
 __inline VEC VecMulMatr( VEC V, MATR M )
@@ -306,7 +348,7 @@ __inline MATR MatrMulMatr5( MATR M1, MATR M2, MATR M3, MATR M4, MATR M5 )
   return MatrMulMatr(MatrMulMatr4(M1, M2, M3, M4), M5);
 } /* End of 'MatrMulMatr5' function */
 
-__inline MATR MatrTranspose( MATR M )                              /********* ********/
+__inline MATR MatrTranspose( MATR M )
 {
   INT i, j;
   MATR r = {{{0}}};

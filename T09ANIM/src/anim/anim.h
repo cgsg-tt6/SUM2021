@@ -23,6 +23,13 @@ typedef struct tagtt6ANIM
   HWND hWnd;
   INT W, H;
 
+  /*
+  HWND TT6_hRndWnd;
+  HDC TT6_hRndDC;
+  HLRC TT6_hRndRC;
+  INT TT6_RndFrameW, TT6_RndFrameH;
+  */
+
   tt6UNIT *Units[TT6_MAX_UNITS];
   INT NumOfUnits;
 

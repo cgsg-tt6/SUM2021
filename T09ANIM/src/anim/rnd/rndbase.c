@@ -26,6 +26,7 @@ VOID TT6_RndInit( HWND hWnd )
     WGL_DEPTH_BITS_ARB, 32,
     0
   };
+
   INT ContextAttribs[] =
   {
     WGL_CONTEXT_MAJOR_VERSION_ARB, 4,

@@ -48,7 +48,8 @@ static VOID TT6_UnitResponse( tt6UNIT_BALL *Uni, tt6ANIM *Ani )
  */
 static VOID TT6_UnitRender( tt6UNIT_BALL *Uni, tt6ANIM *Ani )
 {
-  TT6_RndPrimDraw(&Pr, MatrRotateX(270));
+  //TT6_RndPrimDraw(&Pr, MatrRotateX(270));
+  DrawSphere(Uni->Pos, 3);
 } /* End of 'TT6_UnitRender' function */
 
 /* Unit ball creation function.

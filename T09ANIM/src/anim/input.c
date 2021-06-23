@@ -36,6 +36,7 @@ static VOID TT6_AnimKeyboardResponse( VOID )
     TT6_Anim.KeysClick[i] = TT6_Anim.Keys[i] && !TT6_Anim.KeysOld[i];
   }
   memcpy(TT6_Anim.KeysOld, TT6_Anim.Keys, 256);
+  memset(TT6_Anim.KeysClick, 0, 256);
 } /* End of 'TT6_AnimKeyboardResponse' function */
 
 static VOID TT6_AnimMouseInit( VOID )

@@ -113,15 +113,15 @@ VOID TT6_RndPrimDraw( tt6PRIM *Pr, MATR World )
   if (Pr->IBuf == 0)
   {
     glBindVertexArray(Pr->VA);
-    /* otrisovka */
+    /* otrisovka draw */
     glDrawArrays(GL_TRIANGLES, 0, Pr->NumOfElements);
-    /* turn off buff vertixes array */
+    /* turn off buff vertexes array */
     glBindVertexArray(0);
   }
   else
   {
     glBindVertexArray(Pr->VA);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Pr->VA);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Pr->IBuf);
     glDrawElements(GL_TRIANGLES, Pr->NumOfElements, GL_UNSIGNED_INT, NULL);
     glBindVertexArray(0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

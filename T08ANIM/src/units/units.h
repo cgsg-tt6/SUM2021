@@ -17,6 +17,7 @@
  *   (tt6UNIT *) pointer to created unit.
  */
 tt6UNIT * TT6_UnitCreateCow( VOID );
+tt6UNIT * TT6_UnitControl( VOID );
 
 #endif __units_h_
 

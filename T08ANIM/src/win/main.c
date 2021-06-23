@@ -68,6 +68,7 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevTnstance,
   
   /*** Create units ***/
   TT6_AnimUnitAdd(TT6_UnitCreateCow());
+  TT6_AnimUnitAdd(TT6_UnitControl());
 
   /* Message loop */
   while (TRUE)
@@ -112,26 +113,25 @@ LRESULT CALLBACK TT6_MyWindowFunc( HWND hWnd, UINT Msg,
   case WM_CREATE:
     SetTimer(hWnd, 30, 1, NULL);
     TT6_AnimInit(hWnd);
-    TT6_AnimInputInit(hWnd);
+    //TT6_AnimInputInit();
     return 0;
 
   case WM_SIZE:
     /* Redraw frame */
     TT6_AnimResize(LOWORD(lParam), HIWORD(lParam));
-    SendMessage(hWnd, WM_TIMER, 30, 0);
+    //SendMessage(hWnd, WM_TIMER, 30, 0);
     return 0;
 
   case WM_TIMER:
     /* Draw content */
     TT6_AnimRender();
-    TT6_AnimMouseInit();
 
     /* Send repaint message */
     /* InvalidateRect(hWnd, NULL, FALSE); */
     hDC = GetDC(hWnd);
     /* Copy frame to the window */
     TT6_AnimCopyFrame(hDC);
-    ReleaseDC(hWnd, hDC);
+    //ReleaseDC(hWnd, hDC);
     break;
     
   case WM_PAINT:
@@ -163,7 +163,6 @@ LRESULT CALLBACK TT6_MyWindowFunc( HWND hWnd, UINT Msg,
 
   case WM_DESTROY:
     TT6_AnimClose();
-    TT6_AnimMouseResponse();
     KillTimer(hWnd, 30);
     PostQuitMessage(0);
     return 0;

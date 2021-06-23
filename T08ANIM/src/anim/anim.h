@@ -17,8 +17,6 @@
   VOID (*Response)( tt6UNIT *Uni, tt6ANIM *Ani );  \
   VOID (*Render)( tt6UNIT *Uni, tt6ANIM *Ani )
 
-#define VG4_GET_JOYSTIC_AXIS(A) \
-   (2.0 * (ji.dw ## A ## pos – jc.w ## A ## min) / (jc.w ## A ## max – jc.w ## A ## min) - 1)
 
 typedef struct tagtt6UNIT tt6UNIT;
 typedef struct tagtt6ANIM
@@ -57,6 +55,7 @@ struct tagtt6UNIT
 };
 
 extern tt6ANIM TT6_Anim;
+extern INT TT6_MouseWheel;
 
 VOID TT6_AnimInit( HWND hWnd );
 VOID TT6_AnimClose( VOID );
@@ -71,17 +70,8 @@ tt6UNIT * TT6_AnimUnitCreate( INT Size );
 VOID TT6_TimerInit( VOID );
 VOID TT6_TimerResponse( VOID );
 
-VOID TT6_AnimInputInit( HWND hWnd );
+VOID TT6_AnimInputInit( VOID );
 VOID TT6_AnimInputResponse( VOID );
-
-//VOID TT6_AnimKeyboardInit( VOID );  
-//VOID TT6_AnimKeyboardResponse( VOID );
-
-VOID TT6_AnimMouseInit( VOID );
-VOID TT6_AnimMouseResponse( VOID );
-
-VOID TT6_AnimJoystickInit( VOID );
-VOID TT6_AnimJoystickResponse( VOID );
 
 #endif /* __anim_h_ */
 

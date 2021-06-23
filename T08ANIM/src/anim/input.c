@@ -8,24 +8,47 @@
 #include "anim.h"
 //#include <mmsystem.h>
 
-extern INT TT6_MouseWheel;
-POINT pt;
+#define VG4_GET_JOYSTIC_AXIS(A) \
+   (2.0 * (ji.dw ## A ## pos – jc.w ## A ## min) / (jc.w ## A ## max – jc.w ## A ## min) - 1)
 
-VOID TT6_AnimMouseInit( HWND hWnd )
+
+INT TT6_MouseWheel;
+
+static VOID TT6_AnimMouseInit( VOID )
 {
+  POINT pt;
+
   GetCursorPos(&pt);
-  ScreenToClient(hWnd, &pt);
+  ScreenToClient(TT6_Anim.hWnd, &pt);
+
+  /* Coordinate changing  */
+  TT6_Anim.Mdx = 0;
+  TT6_Anim.Mdy = 0;
+  /* Absolut quantity */
   TT6_Anim.Mx = pt.x;
   TT6_Anim.My = pt.y;
 }
 
-VOID TT6_AnimMouseResponse( VOID )
+static VOID TT6_AnimMouseResponse( VOID )
 {
+  POINT pt;
+
+  GetCursorPos(&pt);
+  ScreenToClient(TT6_Anim.hWnd, &pt);
+
+  /* Priraschenie koordinat na ekrane */
+  TT6_Anim.Mdx = pt.x - TT6_Anim.Mx;
+  TT6_Anim.Mdy = pt.y - TT6_Anim.My;
+  /* Absolytnue znacheniya */
   TT6_Anim.Mx = pt.x;
   TT6_Anim.My = pt.y;
+
+  TT6_Anim.Mdz = TT6_MouseWheel;
+  TT6_Anim.Mz += TT6_MouseWheel;
+  TT6_MouseWheel = 0;
 }
 #if 0
-VOID TT6_AnimJoystickResponse( VOID )
+static VOID TT6_AnimJoystickResponse( VOID )
 {
   /* Joystick */
   if (joyGetNumDevs() > 0)
@@ -59,22 +82,45 @@ VOID TT6_AnimJoystickResponse( VOID )
     }
   }
 }
-VOID TT6_AnimJoystickInit( VOID );
+static VOID TT6_AnimJoystickInit( VOID );
 #endif /* 0 */
 
-/* VOID TT6_AnimKeyboardInit( VOID );
-VOID TT6_AnimKeyboardResponse( VOID ); */
+static VOID TT6_AnimKeyboardInit( VOID )
+{
+  INT i;
 
+  GetKeyboardState(TT6_Anim.Keys);
+  for (i = 0; i < 256; i++)
+    TT6_Anim.Keys[i] >>= 7;
+  memcpy(TT6_Anim.KeysOld, TT6_Anim.Keys, 256);
+  memset(TT6_Anim.KeysClick, 0, 256);
+}
 
-VOID TT6_AnimInputInit( HWND hWnd )
+static VOID TT6_AnimKeyboardResponse( VOID )
+{
+  INT i;
+
+  GetKeyboardState(TT6_Anim.Keys);
+  for (i = 0; i < 256; i++)
+  {
+    TT6_Anim.Keys[i] >>= 7;
+    TT6_Anim.KeysClick[i] = TT6_Anim.Keys[i] && !TT6_Anim.KeysOld[i];
+  }
+  memcpy(TT6_Anim.KeysOld, TT6_Anim.Keys, 256);
+  memset(TT6_Anim.KeysClick, 0, 256);
+}
+
+VOID TT6_AnimInputInit( VOID )
 {   
-  TT6_AnimMouseInit(hWnd);
+  TT6_AnimMouseInit();
+  TT6_AnimKeyboardInit();
   /* TT6_AnimJoystickInit(); */
 }
 
 VOID TT6_AnimInputResponse( VOID )
 { 
   TT6_AnimMouseResponse();
+  TT6_AnimKeyboardResponse();
 }
 
 /* END OF 'input.c' FILE */

@@ -96,17 +96,11 @@ typedef struct tagtt6VERTEX
 typedef struct tagtt6PRIM
 {
   INT 
-    Va,              /* OpenGL vertex array number */
+    VA,              /* OpenGL vertex array number */
     VBuf,            /* OpenGL vertex buffer number */
     IBuf;            /* OpenGL index buffer number */
   INT NumOfElements;
-  /* have to delete later */
-    tt6VERTEX *V; /* Vertex attributes array */
-    INT NumOfV;   /* Number of vertices */
-
-    INT *I;       /* Index array (for trimesh – by 3 ones) */
-    INT NumOfI;   /* Number of indices */
-  /**/
+  
   MATR Trans;   /* Additional transformation matrix */
 } tt6PRIM;
 
@@ -114,12 +108,17 @@ typedef struct tagtt6PRIM
  * ARGUMENTS:
  *   - primitive pointer:
  *       tt6PRIM *Pr;
- *   - number of vertexes and indexes:
- *       INT NoofV, NoofI;
- * RETURNS:
- *   (BOOL) TRUE if success, FALSE if not enough memory.
+ *   - vertex attributes array:
+ *       tt6VERTEX *V;
+ *   - number of vertices:
+ *       INT NumOfV;
+ *   - index array (for trimesh – by 3 ones, may be NULL)
+ *       INT *I;
+ *   - number of indices
+ *       INT NumOfI;
+ * RETURNS: None.
  */
-BOOL TT6_RndPrimCreate( tt6PRIM *Pr, INT NoofV, INT NoofI );
+VOID TT6_RndPrimCreate( tt6PRIM *Pr, tt6VERTEX *V, INT NumOfV, INT *I, INT NumOfI );
 
 /* Primitive free function.
  * ARGUMENTS:
@@ -139,7 +138,8 @@ VOID TT6_RndPrimFree( tt6PRIM *Pr );
  */
 VOID TT6_RndPrimDraw( tt6PRIM *Pr, MATR World );
 
-/* ARGUMENTS:
+/* Load primitive from '*.OBJ' file function.
+ * ARGUMENTS:
  *   - pointer to primitive to load:
  *       tt6PRIM *Pr;
  *   - '*.OBJ' file name:

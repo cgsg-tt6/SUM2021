@@ -73,3 +73,5 @@ tt6UNIT * TT6_UnitCreateBall( VOID )
 } /* End of 'TT6_UnitCreateBall' function */
 #endif /* 0 */
 
+/* END OF 'rndshd.c' FILE */
+

@@ -4,7 +4,7 @@
  * PURPOSE   : 3D animation rendering global data module.
  */
 
-#include "rnd.h"
+#include "../anim.h"
 #include <wglew.h>
 #include <gl/wglext.h>
 
@@ -80,6 +80,7 @@ VOID TT6_RndInit( HWND hWnd )
   glEnable(GL_DEPTH_TEST);
   glClearColor(0.30f, 0.47f, 0.8f, 1);
   wglSwapIntervalEXT(0);
+  TT6_RndShadersInit();
 
   /* Render parameters setup */
   TT6_RndProjSize = 0.1;
@@ -88,6 +89,8 @@ VOID TT6_RndInit( HWND hWnd )
   TT6_RndFrameH = 47;
   TT6_RndFrameW = 47;
   TT6_RndCamSet(VecSet(18, 18, 18), VecSet(0, 0, 0), VecSet(0, 1, 0));
+
+
 } /* End of 'TT6_RndInit' function */
 
 /* Render subsystem deinitialivation function.
@@ -96,6 +99,7 @@ VOID TT6_RndInit( HWND hWnd )
  */
 VOID TT6_RndClose( VOID )
 {
+  TT6_RndShadersClose();
   wglMakeCurrent(NULL, NULL);
   wglDeleteContext(TT6_hRndGLRC);
   ReleaseDC(TT6_hRndWnd, TT6_hRndDC);
@@ -131,6 +135,14 @@ VOID TT6_RndCopyFrame( VOID )
  */
 VOID TT6_RndStart( VOID )
 {
+  static DBL reload;
+
+  if ((reload += TT6_Anim.GlobalDeltaTime) > 1)
+  {
+    reload = 0;
+    TT6_RndShadersUpdate();
+  }
+
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 } /* End of 'TT6_RndStart' function */
 

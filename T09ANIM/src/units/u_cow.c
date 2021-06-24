@@ -26,7 +26,7 @@ struct tagtt6UNIT_COW
  */
 static VOID TT6_UnitInit( tt6UNIT_COW *Uni, tt6ANIM *Ani )
 {
-  TT6_RndPrimLoad(&Uni->Cow, "BIN/MODELS/cow.obj");
+  TT6_RndPrimLoad(&Uni->Cow, "BIN/MODELS/frog.obj");
 } /* End of 'TT6_UnitInit' function */
 
 /* Unit deinitialization function.
@@ -68,7 +68,7 @@ static VOID TT6_UnitResponse( tt6UNIT_COW *Uni, tt6ANIM *Ani )
  */
 static VOID TT6_UnitRender( tt6UNIT_COW *Uni, tt6ANIM *Ani )
 {
-  TT6_RndPrimDraw(&Uni->Cow, MatrRotateY(Ani->Time * 30));
+  TT6_RndPrimDraw(&Uni->Cow, MatrMulMatr3(MatrRotateX(-90), MatrScale(VecSet(3, 3, 3)), MatrRotateY(Ani->Time * 30)));
 } /* End of 'TT6_UnitRender' function */
 
 /* -- функция создания объекта: */

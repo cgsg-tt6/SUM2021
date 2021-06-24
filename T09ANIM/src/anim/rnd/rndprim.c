@@ -8,6 +8,7 @@
 #include <string.h>
 
 #include "rnd.h"
+//#include "res/rndshd.c"
 
 /***
  * Primitive support
@@ -99,36 +100,55 @@ VOID TT6_RndPrimFree( tt6PRIM *Pr )
  */
 VOID TT6_RndPrimDraw( tt6PRIM *Pr, MATR World )
 {
+  INT gl_prim_type = Pr->Type == TT6_RND_PRIM_TRIMESH ? GL_TRIANGLES : GL_TRIANGLE_STRIP;
   /* MATR wvp = MatrMulMatr3(Pr->Trans, World, TT6_RndMatrVP); */
-  MATR wvp = MatrMulMatr(World, MatrMulMatr(TT6_RndMatrView, TT6_RndMatrProj)); /// <------ here we stopped
+  //MATR wvp = MatrMulMatr(World, MatrMulMatr(TT6_RndMatrView, TT6_RndMatrProj)); /// <------ here we stopped
+  MATR wvp = MatrMulMatr(MatrMulMatr(Pr->Trans, World), TT6_RndMatrVP)
+       ///, MatrNormTrans = MatrTranspose(MatrInverse(MatrMulMatr(Pr->Trans, World)))
+       ;
+  INT loc, RndProgId;
 
   /* Send matrix to OpenGL /v.1.0 */
   glLoadMatrixf(wvp.A[0]);
 
+  RndProgId = TT6_RndShaders[0].ProgId;
+  glUseProgram(RndProgId);
+  if ((loc = glGetUniformLocation(RndProgId, "MatrWVP")) != -1)
+    glUniformMatrix4fv(loc, 1, FALSE, wvp.A[0]);
+
   /* Draw triangles */
-  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-  //glBegin(GL_TRIANGLES);
-  /*for (i = 0; i < Pr->NumOfElements; i++)
-    glVertex3fv(&Pr->VA[Pr->IBuf[i]].P.X);*/
+  /* glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); */
   
+  /// glEnable(GL_PRIMITIVE_RESTART);
+  /// glPrimitiveRestartIndex(-1);
+
+  glBindVertexArray(Pr->VA);
   if (Pr->IBuf == 0)
-  {
-    glBindVertexArray(Pr->VA);
     /* otrisovka (draw) */
-    glDrawArrays(GL_TRIANGLES, 0, Pr->NumOfElements);
-    /* turn off buff vertexes array */
-    glBindVertexArray(0);
-  }
+    /* glDrawArrays(GL_TRIANGLES, 0, Pr->NumOfElements); */
+    glDrawArrays(gl_prim_type, 0, Pr->NumOfElements);
   else
   {
-    glBindVertexArray(Pr->VA);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Pr->IBuf);
-    glDrawElements(GL_TRIANGLES, Pr->NumOfElements, GL_UNSIGNED_INT, NULL);
-    glBindVertexArray(0);
+    glDrawElements(gl_prim_type, Pr->NumOfElements, GL_UNSIGNED_INT, NULL);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   }
+  glBindVertexArray(0);
 
-  glEnd();
+#if 0
+  MATR wvp = MatrMulMatr(World, MatrMulMatr(TT6_RndMatrView, TT6_RndMatrProj)); 
+  INT loc, RndProgId;
+
+  TT6_RndProgId = TT6_RndShaders[0].ProgId;
+  glUseProgram(TT6_RndProgId);
+  if ((loc = glGetUniformLocation(TT6_RndProgId)) != -1)
+
+  glBindVertexArray(Pr->VA);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Pr->IBuf);
+  glDrawElements(gl_prim_type, Pr->NumOfElements, GL_UNSIGNED_INT, NULL);
+  glBindVertexArray(0);
+  glUseProgram(0);
+  #endif /* 0 */
 } /* End of 'TT6_RndPrimDraw' function */
 
 /* Load primitive from '*.OBJ' file function.

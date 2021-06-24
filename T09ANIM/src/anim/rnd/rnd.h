@@ -91,17 +91,25 @@ typedef struct tagtt6VERTEX
   VEC4 C;  /* colour (r,g,b,a) */
 } tt6VERTEX;
 
+/* Primitive type */
+typedef enum tagtt6PRIM_TYPE
+{
+  TT6_RND_PRIM_TRIMESH,
+  TT6_RND_PRIM_GRID
+} tt6PRIM_TYPE;
 
 /* Primitive representation type */
 typedef struct tagtt6PRIM
 {
+  tt6PRIM_TYPE Type;
   INT 
     VA,              /* OpenGL vertex array number */
     VBuf,            /* OpenGL vertex buffer number */
     IBuf;            /* OpenGL index buffer number */
   INT NumOfElements;
-  
+
   MATR Trans;   /* Additional transformation matrix */
+  INT MtlNo;
 } tt6PRIM;
 
 /* Primitive creation function.
@@ -155,6 +163,23 @@ BOOL TT6_RndPrintCreatePlane( tt6PRIM *Pr, VEC P, VEC Du, VEC Dv, INT SplitW, IN
  * SHADERS
  ***/
 
+/* Shaders stock maximum size */
+#define TT6_MAX_SHADERS 30
+#define TT6_STR_MAX 300
+
+/* Shader program store type */
+typedef struct tagtt6SHADER tt6SHADER;
+struct tagtt6SHADER
+{
+  CHAR Name [TT6_STR_MAX]; /* Shader filename prefix */
+  INT ProgId;              /* Shader program Id */
+}; 
+
+/* Arrary of shaders */
+extern tt6SHADER TT6_RndShaders[TT6_MAX_SHADERS];
+/* Shaders array store size */
+extern INT TT6_RndShadersSize;
+
 /* Delete shader program function.
  * ARGUMENTS:
  *   - shader program Id:
@@ -166,8 +191,6 @@ VOID TT6_RndShdFree( INT ProgId );
 /***
  * Shaders stock functions
  ***/
-
-
 
 /* Shader stock initialization function.
  * ARGUMENTS: None.
@@ -195,6 +218,58 @@ INT TT6_RndShaderAdd( CHAR *FileNamePrefix );
  * RETURNS: None.
  */
 VOID TT6_RndShadersUpdate( VOID );
+
+/***
+ * Primitive collection support
+ ***/
+
+/* Primitive collection data type */
+typedef struct tagtt6PRIMS
+{
+  INT NumOfPrims; /* Number of primitives in array */  
+  tt6PRIM *Prims; /* Array of primitives */
+  MATR Trans;     /* Common transformation matrix */
+} tt6PRIMS;
+
+/* Create array of primitives function.
+ * ARGUMENTS:
+ *   - pointer to primitives structure:
+ *       tt6PRIMS *Prs;
+ *   - number of primitives to be add:
+ *       INT NumOfPrims;
+ * RETURNS:
+ *   (BOOL) TRUE if successful, FALSE otherwise.
+ */
+BOOL TT6_RndPrimsCreate( tt6PRIMS *Prs, INT NumOfPrims );
+
+/* Delete array of primitives function.
+ * ARGUMENTS:
+ *   - pointer to primitives structure:
+ *       tt6PRIMS *Prs;
+ * RETURNS: None.
+ */
+VOID TT6_RndPrimsFree( tt6PRIMS *Prs );
+
+/* Draw array of primitives function.
+ * ARGUMENTS:
+ *   - pointer to primitives structure:
+ *       tt6PRIMS *Prs;
+ *   - global transformation matrix:
+ *       MATR World;
+ * RETURNS: None.
+ */
+VOID TT6_RndPrimsDraw( tt6PRIMS *Prs, MATR World );
+
+/* Load array of primitives from .G3DM file function.
+ * ARGUMENTS:
+ *   - pointer to primitives structure:
+ *       tt6PRIMS *Prs;
+ *   - file name:
+ *       CHAR *FileName;
+ * RETURNS:
+ *   (BOOL) TRUE if successful, FALSE otherwise.
+ */
+BOOL TT6_RndPrimsLoad( tt6PRIMS *Prs, CHAR *FileName );
 
 #endif /*  __rnd_h_ */
 

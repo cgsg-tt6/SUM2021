@@ -9,6 +9,8 @@
 #include "anim.h"
 #include <mmsystem.h>
 
+#pragma comment(lib, "winmm")
+
 #define TT6_GET_JOYSTIC_AXIS(A) \
    (2.0 * (ji.dw ## A ## pos - jc.w ## A ## min) / (jc.w ## A ## max - jc.w ## A ## min) - 1)
 
@@ -36,7 +38,6 @@ static VOID TT6_AnimKeyboardResponse( VOID )
     TT6_Anim.KeysClick[i] = TT6_Anim.Keys[i] && !TT6_Anim.KeysOld[i];
   }
   memcpy(TT6_Anim.KeysOld, TT6_Anim.Keys, 256);
-  memset(TT6_Anim.KeysClick, 0, 256);
 } /* End of 'TT6_AnimKeyboardResponse' function */
 
 static VOID TT6_AnimMouseInit( VOID )
@@ -71,7 +72,6 @@ static VOID TT6_AnimMouseResponse( VOID )
   TT6_Anim.Mdz = TT6_MouseWheel;
   TT6_Anim.Mz += TT6_MouseWheel;
   TT6_MouseWheel = 0;
-
 } /* End of 'TT6_AnimMouseResponse' function */
 
 static VOID TT6_AnimJoystickInit( VOID )
@@ -80,8 +80,8 @@ static VOID TT6_AnimJoystickInit( VOID )
 
 static VOID TT6_AnimJoystickResponse( VOID )
 {
-  //INT i;
-  #if 0
+  INT i;
+
   /* Joystick */
   if (joyGetNumDevs() > 0)
   {      
@@ -114,7 +114,6 @@ static VOID TT6_AnimJoystickResponse( VOID )
       }
     }
   } 
-#endif /* 0 */
 } /* End of 'TT6_AnimJoystickResponse' function */
 
 VOID TT6_InputInit( VOID )

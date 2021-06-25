@@ -4,4 +4,17 @@
  * PURPOSE   : .
  */
 
+#include "rndres.h"
+
+VOID TT6_RndMtlInit( VOID )
+{
+}
+
+VOID TT6_RndMtlClose( VOID )
+{
+}
+
+VOID TT6_RndMtlAdd( tt6MATERIAL *Mtl );
+
+
 /* END OF 'rndres.c' FILE */

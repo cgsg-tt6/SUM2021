@@ -247,6 +247,10 @@
 							RelativePath=".\src\anim\rnd\res\rndshd.c"
 							>
 						</File>
+						<File
+							RelativePath=".\src\anim\rnd\res\rndtex.c"
+							>
+						</File>
 					</Filter>
 				</Filter>
 			</Filter>

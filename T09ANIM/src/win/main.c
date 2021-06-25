@@ -68,6 +68,8 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevTnstance,
   /*** Create units ***/
   TT6_AnimUnitAdd(TT6_UnitCreateCow());
   TT6_AnimUnitAdd(TT6_UnitControl());
+  TT6_AnimUnitAdd(TT6_UnitCreateShrimp());
+  TT6_AnimUnitAdd(TT6_UnitCreateBall());
 
   /* Message loop */
   while (TRUE)

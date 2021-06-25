@@ -5,11 +5,12 @@
  */
 
 #include "units.h"
-#if 0
+
 typedef struct
 {
   TT6_UNIT_BASE_FIELDS;
   VEC Pos;
+  tt6PRIM Pr;
 } tt6UNIT_BALL;
 
 /* Bounce ball unit initialization function.
@@ -22,8 +23,30 @@ typedef struct
  */
 static VOID TT6_UnitInit( tt6UNIT_BALL *Uni, tt6ANIM *Ani )
 {
+  tt6VERTEX V[] =
+  {
+    {{0, 0, 0}, {0, 0}, {0, 0, 1}, {1, 1, 1, 1}},
+    {{2, 0, 0}, {1, 0}, {0, 0, 1}, {1, 1, 1, 1}},
+    {{0, 2, 0}, {0, 1}, {0, 0, 1}, {1, 1, 1, 1}},
+  };
+  INT I[] = {0, 1, 2};
+
   Uni->Pos = VecSet(0, 1, 0);
+  TT6_RndPrimCreate(&Uni->Pr, TT6_RND_PRIM_TRIMESH, V, 3, I, 3);
 } /* End of 'TT6_UnitInit' function */
+
+/* Unit deinitialization function.
+ * ARGUMENTS:
+ *   - self-pointer to unit object:
+ *       tt6UNIT *Uni;
+ *   - animation context:
+ *       tt6ANIM *Ani;
+ * RETURNS: None.
+ */
+static VOID TT6_UnitClose( tt6UNIT_BALL *Uni, tt6ANIM *Ani )
+{
+  TT6_RndPrimFree(&Uni->Pr);
+} /* End of 'TT6_UnitClose' function */
 
 /* Bounce ball unit inter frame events handle function.
  * ARGUMENTS:
@@ -35,7 +58,7 @@ static VOID TT6_UnitInit( tt6UNIT_BALL *Uni, tt6ANIM *Ani )
  */
 static VOID TT6_UnitResponse( tt6UNIT_BALL *Uni, tt6ANIM *Ani )
 {
-  Uni->Pos.X += Ani->DeltaTime * 2.5;
+  Uni->Pos.X += Ani->DeltaTime * 0.5;
 } /* End of 'TT6_UnitResponse' function */
 
 /* Bounce ball unit render function.
@@ -48,8 +71,8 @@ static VOID TT6_UnitResponse( tt6UNIT_BALL *Uni, tt6ANIM *Ani )
  */
 static VOID TT6_UnitRender( tt6UNIT_BALL *Uni, tt6ANIM *Ani )
 {
-  //TT6_RndPrimDraw(&Pr, MatrRotateX(270));
-  DrawSphere(Uni->Pos, 3);
+  TT6_RndPrimDraw(&Uni->Pr, MatrRotateX(270));
+  /* DrawSphere(Uni->Pos, 3); */
 } /* End of 'TT6_UnitRender' function */
 
 /* Unit ball creation function.
@@ -61,7 +84,7 @@ tt6UNIT * TT6_UnitCreateBall( VOID )
 {
   tt6UNIT *Uni;
 
-  if ((Uni = (tt6UNIT_BALL *)TT6_AnimUnitCreate(sizeof(tt6UNIT_BALL))) == NULL)
+  if ((Uni = TT6_AnimUnitCreate(sizeof(tt6UNIT_BALL))) == NULL)
     return NULL;
 
   /* Setup unit methods */
@@ -71,7 +94,7 @@ tt6UNIT * TT6_UnitCreateBall( VOID )
 
   return Uni;
 } /* End of 'TT6_UnitCreateBall' function */
-#endif /* 0 */
+
 
 /* END OF 'rndshd.c' FILE */
 

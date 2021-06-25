@@ -7,7 +7,7 @@
 #ifndef __def_h_
 #define __def_h_
 
-#pragma warning(disable: 4244 4350)
+#pragma warning(disable: 4244 4350 4018)
 
 /* Debug memory allocation support */
 #ifndef NDEBUG

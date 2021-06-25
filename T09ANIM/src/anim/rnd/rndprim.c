@@ -7,8 +7,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "rnd.h"
-//#include "res/rndshd.c"
+#include "../anim.h"
 
 /***
  * Primitive support
@@ -18,6 +17,8 @@
  * ARGUMENTS:
  *   - primitive pointer:
  *       tt6PRIM *Pr;
+ *   - primitive type
+ *       tt6PRIM_TYPE Type;
  *   - vertex attributes array:
  *       tt6VERTEX *V;
  *   - number of vertices:
@@ -28,7 +29,7 @@
  *       INT NumOfI;
  * RETURNS: None.
  */
-VOID TT6_RndPrimCreate( tt6PRIM *Pr, tt6VERTEX *V, INT NumOfV, INT *I, INT NumOfI )
+VOID TT6_RndPrimCreate( tt6PRIM *Pr, tt6PRIM_TYPE Type, tt6VERTEX *V, INT NumOfV, INT *I, INT NumOfI )
 {
   memset(Pr, 0, sizeof(tt6PRIM));   /* <-- <string.h> */
 
@@ -67,6 +68,7 @@ VOID TT6_RndPrimCreate( tt6PRIM *Pr, tt6VERTEX *V, INT NumOfV, INT *I, INT NumOf
   else
     Pr->NumOfElements = NumOfV;
   Pr->Trans = MatrIdentity();
+  Pr->Type = Type;
 } /* End of 'TT6_RndPrimCreate' function */
 
 /* Primitive free function.
@@ -115,6 +117,8 @@ VOID TT6_RndPrimDraw( tt6PRIM *Pr, MATR World )
   glUseProgram(RndProgId);
   if ((loc = glGetUniformLocation(RndProgId, "MatrWVP")) != -1)
     glUniformMatrix4fv(loc, 1, FALSE, wvp.A[0]);
+  if ((loc = glGetUniformLocation(RndProgId, "Time")) != -1)
+    glUniform1f(loc, TT6_Anim.Time);
 
   /* Draw triangles */
   /* glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); */
@@ -239,7 +243,25 @@ BOOL TT6_RndPrimLoad( tt6PRIM *Pr, CHAR *FileName )
     }
   }
   fclose(F);
-  TT6_RndPrimCreate(Pr, V, nv, Ind, nind);
+
+  for (i = 0; i < nv; i++)
+    V[i].N = VecSet(0, 0, 0);
+  for (i = 0; i < nind; i += 3)
+  {
+    VEC
+      p0 = V[Ind[i]].P,
+      p1 = V[Ind[i + 1]].P,
+      p2 = V[Ind[i + 2]].P,
+      N = VecNormalize(VecCrossVec(VecSubVec(p1, p0), VecSubVec(p2, p0)));
+
+      V[Ind[i]].N = VecAddVec(V[Ind[i]].N, N);
+      V[Ind[i + 1]].N = VecAddVec(V[Ind[i + 1]].N, N);
+      V[Ind[i + 2]].N = VecAddVec(V[Ind[i + 2]].N, N);
+    }
+  for (i = 0; i < nv; i++)
+    V[i].N = VecNormalize(V[i].N);
+
+  TT6_RndPrimCreate(Pr, TT6_RND_PRIM_TRIMESH, V, nv, Ind, nind);
   free(V);
   return TRUE;
 } /* End of 'TT6_RndPrimLoad' function */

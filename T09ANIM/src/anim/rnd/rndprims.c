@@ -7,9 +7,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../anim.h"
+#include "rnd.h"
 
-#if 0
+//#if 0
 
 /***
  * Primitive collection support
@@ -82,9 +82,11 @@ BOOL TT6_RndPrimsLoad( tt6PRIMS *Prs, CHAR *FileName )
   FILE *F;
   DWORD Sign; /* == "G3DM" */
   INT p, m, t;
-  INT NumOfPrims;
-  INT NumOfMaterials;
-  INT NumOfTextures;
+  DWORD 
+    NumOfPrims,
+    NumOfMaterials,
+    NumOfTextures;
+
   struct tagG3DMMTL
   {
     CHAR Name[300]; /* Material name */
@@ -144,9 +146,10 @@ BOOL TT6_RndPrimsLoad( tt6PRIMS *Prs, CHAR *FileName )
   /* Primitives */
   for (p = 0; p < NumOfPrims; p++)
   {
-    DWORD NumOfVertexes;
-    DWORD NumOfFacetIndexes;  /* num of facets * 3 */
-    DWORD MtlNo;              /* Material number in table below (in material section) */
+    DWORD 
+      NumOfVertexes,
+      NumOfFacetIndexes,  /* num of facets * 3 */
+      MtlNo;              /* Material number in table below (in material section) */
     tt6VERTEX *V;
     INT *Ind;
 
@@ -178,7 +181,7 @@ BOOL TT6_RndPrimsLoad( tt6PRIMS *Prs, CHAR *FileName )
     mtl.Trans = mtls[m].Trans;
     for (t = 0; t < 8; t++)
       mtl.Tex[t] = mtls[m].Tex[t] == -1 ? -1 : TT6_RndTexturesSize + mtls[m].Tex[t];
-    TT6_RndMtlAdd(&mtl);
+   /// TT6_RndMtlAdd(&mtl);
   }
 
   for (t = 0; t < NumOfTextures; t++)
@@ -190,7 +193,7 @@ BOOL TT6_RndPrimsLoad( tt6PRIMS *Prs, CHAR *FileName )
       DWORD C;        /* Texture image pixel component count */
     } *tex = (VOID *)ptr;
     ptr += sizeof(*tex);
-    TT6_RndTexAddImg(tex->Name, tex->W, tex->H, tex->C, ptr);
+    /// TT6_RndTexAddImg(tex->Name, tex->W, tex->H, tex->C, ptr);
     ptr += tex->W * tex->H * tex->C;
   }
 
@@ -198,5 +201,5 @@ BOOL TT6_RndPrimsLoad( tt6PRIMS *Prs, CHAR *FileName )
   return TRUE;
 } /* End of 'TT6_RndPrimsDraw' function */
 
-#endif /* 0 */
+//#endif /* 0 */
 /* END OF 'rndprims.c' FILE */

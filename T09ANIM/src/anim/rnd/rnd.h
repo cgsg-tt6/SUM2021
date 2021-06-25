@@ -11,7 +11,9 @@
 #include <glew.h>
 #include <gl/glu.h>
 
-#include "../../def.h"
+//#include "../../def.h"
+#include "res/rndres.h"
+
 
 /*** References ***/
 
@@ -82,6 +84,7 @@ VOID TT6_RndCamSet( VEC Loc, VEC At, VEC Up );
 /***
  * Primitive support
  ***/
+
 /* Vertex representation type */
 typedef struct tagtt6VERTEX
 {
@@ -94,14 +97,16 @@ typedef struct tagtt6VERTEX
 /* Primitive type */
 typedef enum tagtt6PRIM_TYPE
 {
-  TT6_RND_PRIM_TRIMESH,
-  TT6_RND_PRIM_GRID
+  TT6_RND_PRIM_TRIMESH,  /* Triangle mesh - array of triangles */
+  TT6_RND_PRIM_TRISTRIP, /* Triangle strip - array of stripped triangles */
+  TT6_RND_PRIM_LINES,    /* Line segments (by 2 points) */
+  TT6_RND_PRIM_POINTS,   /* Arrauy of points */
 } tt6PRIM_TYPE;
 
 /* Primitive representation type */
 typedef struct tagtt6PRIM
 {
-  tt6PRIM_TYPE Type;
+  tt6PRIM_TYPE Type; /* Ptimitive type */
   INT 
     VA,              /* OpenGL vertex array number */
     VBuf,            /* OpenGL vertex buffer number */
@@ -116,6 +121,8 @@ typedef struct tagtt6PRIM
  * ARGUMENTS:
  *   - primitive pointer:
  *       tt6PRIM *Pr;
+ *   - primitive type
+ *       tt6PRIM_TYPE Type;
  *   - vertex attributes array:
  *       tt6VERTEX *V;
  *   - number of vertices:
@@ -126,7 +133,7 @@ typedef struct tagtt6PRIM
  *       INT NumOfI;
  * RETURNS: None.
  */
-VOID TT6_RndPrimCreate( tt6PRIM *Pr, tt6VERTEX *V, INT NumOfV, INT *I, INT NumOfI );
+VOID TT6_RndPrimCreate( tt6PRIM *Pr, tt6PRIM_TYPE Type, tt6VERTEX *V, INT NumOfV, INT *I, INT NumOfI );
 
 /* Primitive free function.
  * ARGUMENTS:
@@ -160,66 +167,6 @@ BOOL TT6_RndPrimLoad( tt6PRIM *Pr, CHAR *FileName );
 BOOL TT6_RndPrintCreatePlane( tt6PRIM *Pr, VEC P, VEC Du, VEC Dv, INT SplitW, INT SplitH );
 
 /***
- * SHADERS
- ***/
-
-/* Shaders stock maximum size */
-#define TT6_MAX_SHADERS 30
-#define TT6_STR_MAX 300
-
-/* Shader program store type */
-typedef struct tagtt6SHADER tt6SHADER;
-struct tagtt6SHADER
-{
-  CHAR Name [TT6_STR_MAX]; /* Shader filename prefix */
-  INT ProgId;              /* Shader program Id */
-}; 
-
-/* Arrary of shaders */
-extern tt6SHADER TT6_RndShaders[TT6_MAX_SHADERS];
-/* Shaders array store size */
-extern INT TT6_RndShadersSize;
-
-/* Delete shader program function.
- * ARGUMENTS:
- *   - shader program Id:
- *       INT ProgId;
- * RETUNS: None.
- */
-VOID TT6_RndShdFree( INT ProgId );
-
-/***
- * Shaders stock functions
- ***/
-
-/* Shader stock initialization function.
- * ARGUMENTS: None.
- * RETURNS: None.
- */
-VOID TT6_RndShadersInit( VOID );
-
-/* Shader stock deinitialization function.
- * ARGUMENTS: None.
- * RETURNS: None.
- */
-VOID TT6_RndShadersClose( VOID );
-
-/* Shader add to stock function.
- * ARGUMENTS:
- *   - shader folder prefix:
- *       CHAR *FileNamePrefix;
- * RETURNS:
- *   (INT) shader number in stock.
- */
-INT TT6_RndShaderAdd( CHAR *FileNamePrefix );
-
-/* Shader stock update function.
- * ARGUMENTS: None.
- * RETURNS: None.
- */
-VOID TT6_RndShadersUpdate( VOID );
-
-/***
  * Primitive collection support
  ***/
 
@@ -229,6 +176,7 @@ typedef struct tagtt6PRIMS
   INT NumOfPrims; /* Number of primitives in array */  
   tt6PRIM *Prims; /* Array of primitives */
   MATR Trans;     /* Common transformation matrix */
+  INT MtlNo;      /* Material number in material array */
 } tt6PRIMS;
 
 /* Create array of primitives function.
@@ -270,6 +218,8 @@ VOID TT6_RndPrimsDraw( tt6PRIMS *Prs, MATR World );
  *   (BOOL) TRUE if successful, FALSE otherwise.
  */
 BOOL TT6_RndPrimsLoad( tt6PRIMS *Prs, CHAR *FileName );
+
+
 
 #endif /*  __rnd_h_ */
 

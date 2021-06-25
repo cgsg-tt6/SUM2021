@@ -1,6 +1,6 @@
 /* FILE NAME : u_cow.c
  * PROGRAMMER: TT6
- * DATE      : 21.06.2021
+ * DATE      : 25.06.2021
  * PURPOSE   : Draw cow unit.
  */
 
@@ -12,7 +12,7 @@ typedef struct tagtt6UNIT_COW tt6UNIT_COW;
 struct tagtt6UNIT_COW
 {
   TT6_UNIT_BASE_FIELDS;
-  tt6PRIM Cow;
+  tt6PRIMS Cow;
   VEC Pos;
 };
 
@@ -26,7 +26,8 @@ struct tagtt6UNIT_COW
  */
 static VOID TT6_UnitInit( tt6UNIT_COW *Uni, tt6ANIM *Ani )
 {
-  TT6_RndPrimLoad(&Uni->Cow, "BIN/MODELS/frog.obj");
+  /// TT6_RndPrimLoad(&Uni->Cow, "BIN/MODELS/shrimp.obj");
+  TT6_RndPrimsLoad(&Uni->Cow, "BIN/MODELS/frog.g3dm");
 } /* End of 'TT6_UnitInit' function */
 
 /* Unit deinitialization function.
@@ -39,7 +40,7 @@ static VOID TT6_UnitInit( tt6UNIT_COW *Uni, tt6ANIM *Ani )
  */
 static VOID TT6_UnitClose( tt6UNIT_COW *Uni, tt6ANIM *Ani )
 {
-  TT6_RndPrimFree(&Uni->Cow);
+  TT6_RndPrimsFree(&Uni->Cow);
 } /* End of 'TT6_UnitClose' function */
 
 /* Unit inter frame events handle function.
@@ -52,10 +53,6 @@ static VOID TT6_UnitClose( tt6UNIT_COW *Uni, tt6ANIM *Ani )
  */
 static VOID TT6_UnitResponse( tt6UNIT_COW *Uni, tt6ANIM *Ani )
 {
-  CHAR Buf[100];
-
-  sprintf(Buf, "FPS: %.3f", Ani->FPS);
-  SetWindowText(Ani->hWnd, Buf);
 } /* End of 'TT6_UnitResponse' function */
 
 /* Unit render function.
@@ -68,7 +65,7 @@ static VOID TT6_UnitResponse( tt6UNIT_COW *Uni, tt6ANIM *Ani )
  */
 static VOID TT6_UnitRender( tt6UNIT_COW *Uni, tt6ANIM *Ani )
 {
-  TT6_RndPrimDraw(&Uni->Cow, MatrMulMatr3(MatrRotateX(-90), MatrScale(VecSet(3, 3, 3)), MatrRotateY(Ani->Time * 30)));
+  TT6_RndPrimsDraw(&Uni->Cow, MatrMulMatr3(MatrRotateX(-90), MatrScale(VecSet(2.5, 2.5, 2.5)), MatrRotateY(Ani->Time * 30)));
 } /* End of 'TT6_UnitRender' function */
 
 /* -- функция создания объекта: */

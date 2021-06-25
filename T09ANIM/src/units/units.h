@@ -18,6 +18,9 @@
  */
 tt6UNIT * TT6_UnitCreateCow( VOID );
 tt6UNIT * TT6_UnitControl( VOID );
+tt6UNIT * TT6_UnitCreateShrimp( VOID );
+tt6UNIT * TT6_UnitCreateBall( VOID );
+
 
 #endif __units_h_
 

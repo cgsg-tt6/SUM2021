@@ -58,6 +58,11 @@ static VOID TT6_UnitClose( tt6UNIT_CTRL *Uni, tt6ANIM *Ani )
  */
 static VOID TT6_UnitResponse( tt6UNIT_CTRL *Uni, tt6ANIM *Ani )
 {
+  CHAR Buf[100];
+
+  sprintf(Buf, "FPS: %.3f", Ani->FPS);
+  SetWindowText(Ani->hWnd, Buf);
+
   Uni->CamLoc = VecAddVec(Uni->CamLoc, 
       VecMulNum(Uni->Dir, Ani->DeltaTime * Uni->Speed * (Ani->Keys[VK_UP] - Ani->Keys[VK_DOWN])));
   TT6_RndCamSet(Uni->CamLoc, Uni->At, VecSet(0, 1, 0));
@@ -111,6 +116,7 @@ tt6UNIT * TT6_UnitControl( VOID )
     VecAddVec(Uni->CamLoc,
       VecMulNum(Uni->CamDir, Ani->DeltaTime * Uni->Speed * 
         (Ani->Keys[VK_UP] - Ani->Keys[VK_DOWN]));
+  TT6_RndCamSet(Uni->CamLoc, Uni->At, VecSet(0, 1, 0));
 } */ /* End of 'TT6_UnitResponse' function */
 
 tt6UNIT * TT6_UnitSetCam( VOID )

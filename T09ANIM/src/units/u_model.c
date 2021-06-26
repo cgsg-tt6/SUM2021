@@ -68,7 +68,7 @@ static VOID TT6_UnitResponse( tt6UNIT_Shrimp *Uni, tt6ANIM *Ani )
  */
 static VOID TT6_UnitRender( tt6UNIT_Shrimp *Uni, tt6ANIM *Ani )
 {
-  TT6_RndPrimsDraw(&Uni->Shrimp, MatrMulMatr3(MatrScale(VecSet1(1.5)), MatrRotateY(Ani->Time * 30), MatrTranslate(VecSet(-13, 0, 0))));
+  TT6_RndPrimsDraw(&Uni->Shrimp, MatrMulMatr3(MatrScale(VecSet1(0.5)), MatrRotateY(Ani->Time * 30), MatrTranslate(VecSet(-13, 0, 0))));
 } /* End of 'TT6_UnitRender' function */
 
 /* funkcia sozdania objecta */

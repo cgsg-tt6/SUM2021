@@ -76,6 +76,40 @@ static VOID TT6_AnimMouseResponse( VOID )
 
 static VOID TT6_AnimJoystickInit( VOID )
 {
+  INT i;
+
+  /* Joystick */
+  if (joyGetNumDevs() > 0)
+  {      
+
+    JOYCAPS jc;                                     
+
+   /* Get joystick info */
+    if (joyGetDevCaps(JOYSTICKID1, &jc, sizeof(jc)) == JOYERR_NOERROR)
+    {
+      JOYINFOEX ji;
+
+      ji.dwSize = sizeof(JOYINFOEX);
+      ji.dwFlags = JOY_RETURNALL;
+      if (joyGetPosEx(JOYSTICKID1, &ji) == JOYERR_NOERROR)
+      {
+        /* Buttons */
+        for (i = 0; i < 32; i++)
+        {
+          TT6_Anim.JBut[i] = (ji.dwButtons >> i) & 1;
+          TT6_Anim.JButClick[i] = TT6_Anim.JBut[i] && !TT6_Anim.JButOld[i];
+          TT6_Anim.JButOld[i] = TT6_Anim.JBut[i];
+        }
+        /* Axes */
+        TT6_Anim.JX = TT6_GET_JOYSTIC_AXIS(X);
+        TT6_Anim.JY = TT6_GET_JOYSTIC_AXIS(Y);
+        TT6_Anim.JZ = TT6_GET_JOYSTIC_AXIS(Z);
+        TT6_Anim.JR = TT6_GET_JOYSTIC_AXIS(R);
+        /* Point of view */
+        TT6_Anim.JPov = ji.dwPOV == 0xFFFF ? -1 : ji.dwPOV / 4500;
+      }
+    }
+  } 
 } /* End of 'TT6_AnimJoystickInit' function */
 
 static VOID TT6_AnimJoystickResponse( VOID )

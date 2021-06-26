@@ -4,6 +4,7 @@
  * PURPOSE   : Control unit.
  */
 
+#include <stdio.h>
 #include "units.h"
 
 typedef struct tagtt6UNIT_CTRL tt6UNIT_CTRL;
@@ -13,6 +14,8 @@ struct tagtt6UNIT_CTRL
   tt6PRIM Ctrl;
   VEC 
     CamLoc, Dir, At, Right;
+  VEC
+    CamDist, RotX, RotY;
   INT Speed;
   DBL AngleSpeed;
 };
@@ -33,7 +36,6 @@ static VOID TT6_UnitInit( tt6UNIT_CTRL *Uni, tt6ANIM *Ani )
   Uni->Right = VecNormalize(VecCrossVec(Uni->Dir, VecSet(0, 1, 0)));
   Uni->Speed = 15;
   Uni->AngleSpeed = 5;
-  //TT6_RndCamSet(VecSet(0, 25, 35), VecNormalize(VecSubVec(Uni->At, Uni->CamLoc)), VecSet(0, 1, 0));
 } /* End of 'TT6_UnitInit' function */
 
 /* Unit deinitialization function.
@@ -66,9 +68,9 @@ static VOID TT6_UnitResponse( tt6UNIT_CTRL *Uni, tt6ANIM *Ani )
   Uni->CamLoc = VecAddVec(Uni->CamLoc, 
       VecMulNum(Uni->Dir, Ani->DeltaTime * Uni->Speed * (Ani->Keys[VK_UP] - Ani->Keys[VK_DOWN])));
   TT6_RndCamSet(Uni->CamLoc, Uni->At, VecSet(0, 1, 0));
-  /*Uni->CamLoc =  
-    VecSet(Uni->CamLoc.X, Uni->CamLoc.Y, Uni->CamLoc.Z + Ani->DeltaTime * Uni->Speed * (Ani->Keys[VK_RIGHT] - Ani->Keys[VK_LEFT]));
-  Uni->At = VecSet(0, 0, Ani->DeltaTime * Uni->Speed * (Ani->Keys[VK_RIGHT] - Ani->Keys[VK_LEFT]));
+
+  /* Uni->CamLoc = VecAddVec(Uni->CamLoc, 
+      VecMulNum(Uni->Dir, Ani->DeltaTime * Uni->Speed * (Ani->Keys[VK_UP] - Ani->Keys[VK_DOWN])));
   TT6_RndCamSet(Uni->CamLoc, Uni->At, VecSet(0, 1, 0)); */
 } /* End of 'TT6_UnitResponse' function */
 

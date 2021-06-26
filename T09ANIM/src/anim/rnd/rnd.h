@@ -30,6 +30,7 @@ extern MATR
   TT6_RndMatrProj,
   TT6_RndMatrVP,
   TT6_RndMatrView;
+extern VEC TT6_RndCamLoc;
 
 /* From 'rndbase.c' file */
 VOID TT6_RndInit( HWND hWnd );
@@ -112,6 +113,7 @@ typedef struct tagtt6PRIM
     VBuf,            /* OpenGL vertex buffer number */
     IBuf;            /* OpenGL index buffer number */
   INT NumOfElements;
+  CHAR Ind[300];
 
   MATR Trans;   /* Additional transformation matrix */
   INT MtlNo;
@@ -218,8 +220,6 @@ VOID TT6_RndPrimsDraw( tt6PRIMS *Prs, MATR World );
  *   (BOOL) TRUE if successful, FALSE otherwise.
  */
 BOOL TT6_RndPrimsLoad( tt6PRIMS *Prs, CHAR *FileName );
-
-
 
 #endif /*  __rnd_h_ */
 

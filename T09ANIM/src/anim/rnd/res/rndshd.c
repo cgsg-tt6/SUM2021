@@ -203,10 +203,8 @@ VOID TT6_RndShdFree( INT ProgId )
  * Shaders stock functions
  ***/
 
-/* Arrary of shaders */
-tt6SHADER TT6_RndShaders[TT6_MAX_SHADERS];
-/* Shaders array store size */
-INT TT6_RndShadersSize;
+tt6SHADER TT6_RndShaders[TT6_MAX_SHADERS]; /* Arrary of shaders */
+INT TT6_RndShadersSize;                    /* Shaders array store size */
 
 /* Shader stock initialization function.
  * ARGUMENTS: None.
@@ -214,8 +212,6 @@ INT TT6_RndShadersSize;
  */
 VOID TT6_RndShadersInit( VOID )
 {
-  glEnable(GL_PRIMITIVE_RESTART);
-  glPrimitiveRestartIndex(-1);
   TT6_RndShadersSize = 0;
   TT6_RndShaderAdd("DEFAULT");
 } /* End of 'TT6_RndShadersInit' function */

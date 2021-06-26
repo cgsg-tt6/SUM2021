@@ -105,31 +105,31 @@ VOID TT6_RndPrimDraw( tt6PRIM *Pr, MATR World )
   INT gl_prim_type = Pr->Type == TT6_RND_PRIM_TRIMESH ? GL_TRIANGLES : GL_TRIANGLE_STRIP;
   /* MATR wvp = MatrMulMatr3(Pr->Trans, World, TT6_RndMatrVP); */
   //MATR wvp = MatrMulMatr(World, MatrMulMatr(TT6_RndMatrView, TT6_RndMatrProj)); /// <------ here we stopped
-  MATR wvp = MatrMulMatr(MatrMulMatr(Pr->Trans, World), TT6_RndMatrVP)
-       ///, MatrNormTrans = MatrTranspose(MatrInverse(MatrMulMatr(Pr->Trans, World)))
-       ;
+  MATR
+    w = MatrMulMatr(Pr->Trans, World),
+    winv = MatrTranspose(MatrInverse(w)),
+    wvp = MatrMulMatr(w, TT6_RndMatrVP);
   INT loc, RndProgId;
 
   /* Send matrix to OpenGL /v.1.0 */
   glLoadMatrixf(wvp.A[0]);
 
-  RndProgId = TT6_RndShaders[0].ProgId;
-  glUseProgram(RndProgId);
+  RndProgId = TT6_RndMtlApply(Pr->MtlNo);
   if ((loc = glGetUniformLocation(RndProgId, "MatrWVP")) != -1)
     glUniformMatrix4fv(loc, 1, FALSE, wvp.A[0]);
-  if ((loc = glGetUniformLocation(RndProgId, "Time")) != -1)
-    glUniform1f(loc, TT6_Anim.Time);
+  if ((loc = glGetUniformLocation(RndProgId, "MatrW")) != -1)
+    glUniformMatrix4fv(loc, 1, FALSE, w.A[0]);
+  if ((loc = glGetUniformLocation(RndProgId, "MatrWInv")) != -1)
+    glUniformMatrix4fv(loc, 1, FALSE, winv.A[0]);
+  if ((loc = glGetUniformLocation(RndProgId, "CamLoc")) != -1)
+    glUniform3fv(loc, 1, &TT6_RndCamLoc.X);
 
   /* Draw triangles */
   /* glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); */
   
-  /// glEnable(GL_PRIMITIVE_RESTART);
-  /// glPrimitiveRestartIndex(-1);
-
   glBindVertexArray(Pr->VA);
   if (Pr->IBuf == 0)
     /* otrisovka (draw) */
-    /* glDrawArrays(GL_TRIANGLES, 0, Pr->NumOfElements); */
     glDrawArrays(gl_prim_type, 0, Pr->NumOfElements);
   else
   {
@@ -138,21 +138,6 @@ VOID TT6_RndPrimDraw( tt6PRIM *Pr, MATR World )
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   }
   glBindVertexArray(0);
-
-#if 0
-  MATR wvp = MatrMulMatr(World, MatrMulMatr(TT6_RndMatrView, TT6_RndMatrProj)); 
-  INT loc, RndProgId;
-
-  TT6_RndProgId = TT6_RndShaders[0].ProgId;
-  glUseProgram(TT6_RndProgId);
-  if ((loc = glGetUniformLocation(TT6_RndProgId)) != -1)
-
-  glBindVertexArray(Pr->VA);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Pr->IBuf);
-  glDrawElements(gl_prim_type, Pr->NumOfElements, GL_UNSIGNED_INT, NULL);
-  glBindVertexArray(0);
-  glUseProgram(0);
-  #endif /* 0 */
 } /* End of 'TT6_RndPrimDraw' function */
 
 /* Load primitive from '*.OBJ' file function.
@@ -266,7 +251,7 @@ BOOL TT6_RndPrimLoad( tt6PRIM *Pr, CHAR *FileName )
   return TRUE;
 } /* End of 'TT6_RndPrimLoad' function */
 
-#if 0
+//#if 0
 BOOL TT6_RndPrimCreateGrid (tt6PRIM *Pr, INT SplitW, INT SplitH)
 {
   INT i, j, k;
@@ -275,18 +260,18 @@ BOOL TT6_RndPrimCreateGrid (tt6PRIM *Pr, INT SplitW, INT SplitH)
   for (k = 0, i = 0; i < SplitH - 1; i++)
     for (j = 0; j < SplitW - 1; j++)
     {
-      Pr->IBuf[k++] = i * SplitW + j;
-      Pr->IBuf[k++] = i * SplitW + j + 1;
-      Pr->IBuf[k++] = (i + 1) * SplitW + j;
+      Pr->Ind[k++] = i * SplitW + j;
+      Pr->Ind[k++] = i * SplitW + j + 1;
+      Pr->Ind[k++] = (i + 1) * SplitW + j;
 
       
-      Pr->IBuf[k++] = (i + 1) * SplitW + j; 
-      Pr->IBuf[k++] = i * SplitW + j + 1;
-      Pr->IBuf[k++] = (i + 1) * SplitW + j + 1;
+      Pr->Ind[k++] = (i + 1) * SplitW + j; 
+      Pr->Ind[k++] = i * SplitW + j + 1;
+      Pr->Ind[k++] = (i + 1) * SplitW + j + 1;
     }
     return TRUE;
 } /* End of 'TT6_RndPrimCreateGrid' function */
-#endif /* 0 */
+//#endif /* 0 */
 
 /*
 BOOL TT6_RndPrimCreateSphere( tt6PRIM *Pr, VEC C, DBL R, INT SplitW, INT SplitH )
@@ -301,21 +286,22 @@ BOOL TT6_RndPrimCreateSphere( tt6PRIM *Pr, VEC C, DBL R, INT SplitW, INT SplitH 
     }
 } */
 
-#if 0
+//#if 0
 BOOL TT6_RndPrintCreatePlane( tt6PRIM *Pr, VEC P, VEC Du, VEC Dv, INT SplitW, INT SplitH )
 {
-  INT i, j;
-
+  /* INT i, j; */
+  
   if (!TT6_RndPrimCreateGrid(Pr, SplitW, SplitH))
     return FALSE;
 
   /* set vertexes */
-  for (i = 0; i < SplitH; i++)
+  /*for (i = 0; i < SplitH; i++)
     for (j = 0; j < SplitW; j++)
-      Pr->VA[i * SplitW + j].P =
+      Pr->VA[i * SplitW + j] =
         VecAddVec3(P, VecMulNum(Du, j / (SplitW - 1.0)), VecMulNum(Dv, i / (SplitH - 1.0)));
-    return TRUE;
+    return TRUE;   */
+      return 0;
 } /* End of 'TT6_RndPrimCreatePlane' function */
-#endif /* 0 */
+//#endif /* 0 */
 
 /* END OF 'rndprim.c' FILE */

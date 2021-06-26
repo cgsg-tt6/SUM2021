@@ -30,6 +30,12 @@ static VOID TT6_UnitInit( tt6UNIT_BALL *Uni, tt6ANIM *Ani )
     {{0, 2, 0}, {0, 1}, {0, 0, 1}, {1, 1, 1, 1}},
   };
   INT I[] = {0, 1, 2};
+  /*
+  FLT t[2][2] =
+  {
+    {0.8, 1},
+    {1, 0.3}
+  }; */
 
   Uni->Pos = VecSet(0, 1, 0);
   TT6_RndPrimCreate(&Uni->Pr, TT6_RND_PRIM_TRIMESH, V, 3, I, 3);

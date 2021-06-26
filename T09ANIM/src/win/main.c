@@ -36,7 +36,7 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevTnstance,
   wc.cbClsExtra = 0;
   wc.cbWndExtra = 0;
   wc.hbrBackground = (HBRUSH)COLOR_WINDOW; 
-  wc.hCursor = LoadCursor(NULL, IDC_HAND);
+  wc.hCursor = LoadCursor(NULL, IDC_CROSS);
   wc.hIcon = LoadIcon(NULL, IDI_WINLOGO);
   wc.hInstance = hInstance;
   wc.lpszClassName = TT6_WND_CLASS_NAME;
@@ -69,7 +69,7 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevTnstance,
   TT6_AnimUnitAdd(TT6_UnitCreateCow());
   TT6_AnimUnitAdd(TT6_UnitControl());
   TT6_AnimUnitAdd(TT6_UnitCreateShrimp());
-  TT6_AnimUnitAdd(TT6_UnitCreateBall());
+  //TT6_AnimUnitAdd(TT6_UnitCreateBall());
 
   /* Message loop */
   while (TRUE)

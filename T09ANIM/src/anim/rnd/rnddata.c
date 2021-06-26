@@ -19,4 +19,5 @@ MATR
   TT6_RndMatrVP,
   TT6_RndMatrView;
 
+VEC TT6_RndCamLoc;
 /* END OF 'rnddata.c' FILE */

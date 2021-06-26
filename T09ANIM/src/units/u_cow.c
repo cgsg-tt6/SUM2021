@@ -14,6 +14,7 @@ struct tagtt6UNIT_COW
   TT6_UNIT_BASE_FIELDS;
   tt6PRIMS Cow;
   VEC Pos;
+  MATR m;
 };
 
 /* Unit initialization function.
@@ -27,6 +28,8 @@ struct tagtt6UNIT_COW
 static VOID TT6_UnitInit( tt6UNIT_COW *Uni, tt6ANIM *Ani )
 {
   /// TT6_RndPrimLoad(&Uni->Cow, "BIN/MODELS/shrimp.obj");
+  Uni->m = MatrMulMatr3(MatrRotateX(-90), MatrScale(VecSet(2.5, 2.5, 2.5)), MatrRotateY(Ani->Time * 30));
+
   TT6_RndPrimsLoad(&Uni->Cow, "BIN/MODELS/frog.g3dm");
 } /* End of 'TT6_UnitInit' function */
 
@@ -53,6 +56,12 @@ static VOID TT6_UnitClose( tt6UNIT_COW *Uni, tt6ANIM *Ani )
  */
 static VOID TT6_UnitResponse( tt6UNIT_COW *Uni, tt6ANIM *Ani )
 {
+  if ((Ani->Keys[VK_LEFT] == 1) || (Ani->Keys[VK_RIGHT] == 1))
+    Uni->m = MatrMulMatr(Uni->m, MatrTranslate(VecSet(-(Ani->Keys[VK_LEFT] - Ani->Keys[VK_RIGHT]) * Ani->GlobalDeltaTime * 10, 0, 0)));
+  if ((Ani->Keys['R'] == 1) || (Ani->Keys['F'] == 1))
+    Uni->m = MatrMulMatr(Uni->m, MatrRotateY(-36 * (Ani->Keys['R'] - Ani->Keys['F']) * Ani->GlobalDeltaTime));
+  if ((Ani->Keys[VK_DOWN] == 1) || (Ani->Keys[VK_UP] == 1))
+    Uni->m = MatrMulMatr(Uni->m, MatrTranslate(VecSet(-(Ani->Keys[VK_DOWN] - Ani->Keys[VK_UP]) * Ani->GlobalDeltaTime * 10, 0, 0)));
 } /* End of 'TT6_UnitResponse' function */
 
 /* Unit render function.
@@ -65,7 +74,7 @@ static VOID TT6_UnitResponse( tt6UNIT_COW *Uni, tt6ANIM *Ani )
  */
 static VOID TT6_UnitRender( tt6UNIT_COW *Uni, tt6ANIM *Ani )
 {
-  TT6_RndPrimsDraw(&Uni->Cow, MatrMulMatr3(MatrRotateX(-90), MatrScale(VecSet(2.5, 2.5, 2.5)), MatrRotateY(Ani->Time * 30)));
+  TT6_RndPrimsDraw(&Uni->Cow, Uni->m);
 } /* End of 'TT6_UnitRender' function */
 
 /* -- функция создания объекта: */

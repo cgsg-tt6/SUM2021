@@ -9,8 +9,6 @@
 
 #include "rnd.h"
 
-//#if 0
-
 /***
  * Primitive collection support
  ***/
@@ -181,7 +179,7 @@ BOOL TT6_RndPrimsLoad( tt6PRIMS *Prs, CHAR *FileName )
     mtl.Trans = mtls[m].Trans;
     for (t = 0; t < 8; t++)
       mtl.Tex[t] = mtls[m].Tex[t] == -1 ? -1 : TT6_RndTexturesSize + mtls[m].Tex[t];
-   /// TT6_RndMtlAdd(&mtl);
+    TT6_RndMtlAdd(&mtl);
   }
 
   for (t = 0; t < NumOfTextures; t++)
@@ -193,7 +191,7 @@ BOOL TT6_RndPrimsLoad( tt6PRIMS *Prs, CHAR *FileName )
       DWORD C;        /* Texture image pixel component count */
     } *tex = (VOID *)ptr;
     ptr += sizeof(*tex);
-    /// TT6_RndTexAddImg(tex->Name, tex->W, tex->H, tex->C, ptr);
+    TT6_RndTexAddImg(tex->Name, tex->W, tex->H, tex->C, ptr);
     ptr += tex->W * tex->H * tex->C;
   }
 
@@ -201,5 +199,4 @@ BOOL TT6_RndPrimsLoad( tt6PRIMS *Prs, CHAR *FileName )
   return TRUE;
 } /* End of 'TT6_RndPrimsDraw' function */
 
-//#endif /* 0 */
 /* END OF 'rndprims.c' FILE */

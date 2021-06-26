@@ -76,11 +76,14 @@ VOID TT6_RndInit( HWND hWnd )
 
   TT6_hRndGLRC = hRC;
   wglMakeCurrent(TT6_hRndDC, TT6_hRndGLRC);
+
   /* Set default OpenGL parameters */
   glEnable(GL_DEPTH_TEST);
   glClearColor(0.30f, 0.47f, 0.8f, 1);
   wglSwapIntervalEXT(0);
-  TT6_RndShadersInit();
+  glEnable(GL_PRIMITIVE_RESTART);
+  glPrimitiveRestartIndex(-1);
+  TT6_RndResInit();
 
   /* Render parameters setup */
   TT6_RndProjSize = 0.1;
@@ -99,7 +102,7 @@ VOID TT6_RndInit( HWND hWnd )
  */
 VOID TT6_RndClose( VOID )
 {
-  TT6_RndShadersClose();
+  TT6_RndResClose();
   wglMakeCurrent(NULL, NULL);
   wglDeleteContext(TT6_hRndGLRC);
   ReleaseDC(TT6_hRndWnd, TT6_hRndDC);
@@ -190,6 +193,7 @@ VOID TT6_RndProjSet( VOID )
  */
 VOID TT6_RndCamSet( VEC Loc, VEC At, VEC Up )
 {
+  TT6_RndCamLoc = Loc;
   TT6_RndMatrView = MatrView(Loc, At, Up);
   TT6_RndMatrVP = MatrMulMatr(TT6_RndMatrView, TT6_RndMatrProj);
 } /* End of 'TT6_RndProjSet' function */

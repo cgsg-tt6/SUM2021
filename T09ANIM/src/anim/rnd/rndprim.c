@@ -1,6 +1,6 @@
 /* FILE NAME : rndprim.c
  * PROGRAMMER: TT6
- * DATE      : 21.06.2021
+ * DATE      : 27.06.2021
  * PURPOSE   : 3D animation primitive handle module.
  */
 
@@ -43,11 +43,11 @@ VOID TT6_RndPrimCreate( tt6PRIM *Pr, tt6PRIM_TYPE Type, tt6VERTEX *V, INT NumOfV
     glBufferData(GL_ARRAY_BUFFER, sizeof(tt6VERTEX) * NumOfV, V, GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, FALSE, sizeof(tt6VERTEX),
-                          (VOID *)0); /* position */
+                          (VOID *)0);                                /* position */
     glVertexAttribPointer(1, 2, GL_FLOAT, FALSE, sizeof(tt6VERTEX),
-                          (VOID *)sizeof(VEC)); /* texture coordinates */
+                          (VOID *)sizeof(VEC));                      /* texture coordinates */
     glVertexAttribPointer(2, 3, GL_FLOAT, FALSE, sizeof(tt6VERTEX),
-                          (VOID *)(sizeof(VEC) + sizeof(VEC2))); /* normal */
+                          (VOID *)(sizeof(VEC) + sizeof(VEC2)));     /* normal */
     glVertexAttribPointer(3, 4, GL_FLOAT, FALSE, sizeof(tt6VERTEX),
                           (VOID *)(sizeof(VEC) * 2 + sizeof(VEC2))); /* color */
 
@@ -79,8 +79,6 @@ VOID TT6_RndPrimCreate( tt6PRIM *Pr, tt6PRIM_TYPE Type, tt6VERTEX *V, INT NumOfV
  */
 VOID TT6_RndPrimFree( tt6PRIM *Pr )
 {
-  //if (Pr->VA != NULL)
-    //free(Pr->VA);
   glDeleteBuffers(1, &Pr->IBuf);
 
   glBindVertexArray(Pr->VA);
@@ -103,8 +101,6 @@ VOID TT6_RndPrimFree( tt6PRIM *Pr )
 VOID TT6_RndPrimDraw( tt6PRIM *Pr, MATR World )
 {
   INT gl_prim_type = Pr->Type == TT6_RND_PRIM_TRIMESH ? GL_TRIANGLES : GL_TRIANGLE_STRIP;
-  /* MATR wvp = MatrMulMatr3(Pr->Trans, World, TT6_RndMatrVP); */
-  //MATR wvp = MatrMulMatr(World, MatrMulMatr(TT6_RndMatrView, TT6_RndMatrProj)); /// <------ here we stopped
   MATR
     w = MatrMulMatr(Pr->Trans, World),
     winv = MatrTranspose(MatrInverse(w)),
@@ -192,7 +188,6 @@ BOOL TT6_RndPrimLoad( tt6PRIM *Pr, CHAR *FileName )
     if (Buf[0] == 'v' && Buf[1] == ' ')
     {
       DBL x, y, z;
-      /* VEC4 c = {Rnd0(), Rnd0(), Rnd0(), 1}; */
       VEC4 c = {0};
 
       sscanf(Buf + 2, "%lf%lf%lf", &x, &y, &z);
@@ -251,7 +246,6 @@ BOOL TT6_RndPrimLoad( tt6PRIM *Pr, CHAR *FileName )
   return TRUE;
 } /* End of 'TT6_RndPrimLoad' function */
 
-//#if 0
 BOOL TT6_RndPrimCreateGrid (tt6PRIM *Pr, INT SplitW, INT SplitH)
 {
   INT i, j, k;
@@ -271,7 +265,6 @@ BOOL TT6_RndPrimCreateGrid (tt6PRIM *Pr, INT SplitW, INT SplitH)
     }
     return TRUE;
 } /* End of 'TT6_RndPrimCreateGrid' function */
-//#endif /* 0 */
 
 /*
 BOOL TT6_RndPrimCreateSphere( tt6PRIM *Pr, VEC C, DBL R, INT SplitW, INT SplitH )
@@ -286,22 +279,19 @@ BOOL TT6_RndPrimCreateSphere( tt6PRIM *Pr, VEC C, DBL R, INT SplitW, INT SplitH 
     }
 } */
 
-//#if 0
 BOOL TT6_RndPrintCreatePlane( tt6PRIM *Pr, VEC P, VEC Du, VEC Dv, INT SplitW, INT SplitH )
 {
-  /* INT i, j; */
+  INT i, j;
   
   if (!TT6_RndPrimCreateGrid(Pr, SplitW, SplitH))
     return FALSE;
 
-  /* set vertexes */
-  /*for (i = 0; i < SplitH; i++)
+  /* Set vertexes */
+  for (i = 0; i < SplitH; i++)
     for (j = 0; j < SplitW; j++)
-      Pr->VA[i * SplitW + j] =
+      Pr->V[i * SplitW + j].P =
         VecAddVec3(P, VecMulNum(Du, j / (SplitW - 1.0)), VecMulNum(Dv, i / (SplitH - 1.0)));
-    return TRUE;   */
-      return 0;
+    return TRUE;  
 } /* End of 'TT6_RndPrimCreatePlane' function */
-//#endif /* 0 */
 
 /* END OF 'rndprim.c' FILE */

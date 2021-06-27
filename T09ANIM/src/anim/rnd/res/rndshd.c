@@ -1,6 +1,6 @@
 /* FILE NAME: rndshd.c
  * PROGRAMMER: TT6
- * DATE: 23.06.2021
+ * DATE: 27.06.2021
  * PURPOSE: 3D animation rendering shader handle functions module.
  */
 

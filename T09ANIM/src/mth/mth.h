@@ -1,6 +1,6 @@
 /* FILE NAME  : math.h
  * PROGRAMMER : TT6
- * DATE       : 21.06.2021
+ * DATE       : 27.06.2021
  * PURPOSE    : Space math library.
  */
 
@@ -140,9 +140,7 @@ __inline VEC VecCrossVec( VEC V1, VEC V2 )
 __inline FLT VecLen2( VEC V )
 {
   return VecDotVec(V, V);
-} /* End of 'VecLen' function */
-
- /* End of 'VecLen2' function */
+} /* End of 'VecLen2' function */
 
 __inline FLT VecLen( VEC V )  /* |V| */
 {
@@ -175,7 +173,6 @@ __inline VEC VecMulMatr( VEC V, MATR M )
   return v;
 } /* End of 'VecMultMatr' function */
 
-/* точку умножаем на матрицу с учётом последнего ряда */
 __inline VEC PointTransform( VEC V, MATR M )
 {
   return VecSet(V.X * M.A[0][0] + V.Y * M.A[1][0] + V.Z * M.A[2][0] + M.A[3][0],
@@ -210,16 +207,6 @@ __inline MATR MatrIdentity( VOID )
 {
   return UnitMatrix;
 } /* End of 'MatrIdentity' function */
-/*
-MATR MatrTranslate( VECT T )
-{
-  MATR m = UnitMatrix;
-  
-  m.A[3][0] = T.X;
-  m.A[3][1] = T.Y;
-  m.A[3][2] = T.Z;
-  return m;
-} *//* End of 'MatrTranslate' function */
 
 __inline MATR MatrTranslate( VEC T )
 {
@@ -328,7 +315,7 @@ __inline MATR MatrMulMatr( MATR M1, MATR M2 )
 
   for (i = 0; i < 4; i++)
     for (j = 0; j < 4; j++)
-      for (r.A[i][j] = 0, k = 0; k < 4; k++)                        /* ???????????? */
+      for (r.A[i][j] = 0, k = 0; k < 4; k++)
         r.A[i][j] += M1.A[i][k] * M2.A[k][j];
   return r;
 } /* End of 'MatrMulMatr' function */
@@ -392,7 +379,7 @@ __inline MATR MatrInverse( MATR M )
   if (det == 0)
     return MatrIdentity();
 
-  /* строим присоединенную матрицу */ /* build adjoint matrix */
+  /* build adjoint matrix */
   r.A[0][0] =
     +MatrDeterm3x3(M.A[1][1], M.A[1][2], M.A[1][3],
                    M.A[2][1], M.A[2][2], M.A[2][3],

@@ -1,7 +1,7 @@
 /* FILE NAME : rndmtl.c
  * PROGRAMMER: TT6
- * DATE      : 26.06.2021
- * PURPOSE   : .
+ * DATE      : 27.06.2021
+ * PURPOSE   : Materials.
  */
 
 #include "rndres.h"
@@ -37,13 +37,6 @@ VOID TT6_RndMtlClose( VOID )
 
 INT TT6_RndMtlAdd( tt6MATERIAL *Mtl )
 {
-  /*
-  INT i;
-  
-  for (i = 0; i < TT6_RndMaterialsSize; i++)
-    if (strcmp(Mtl, TT6_RndMaterials[i].Name) == 0)
-      return i;
-  */
   if (TT6_RndMaterialsSize >= TT6_MAX_MATERIALS)
     return 0;
   TT6_RndMaterials[TT6_RndMaterialsSize] = *Mtl;
@@ -54,7 +47,7 @@ INT TT6_RndMtlAdd( tt6MATERIAL *Mtl )
 tt6MATERIAL TT6_RndMtlGetDeg( VOID )
 {
   return TT6_RndMaterials[0];
-} /* End of 'TT6_RndMtlGetDef' function */
+} /* End of 'TT6_RndMtlGetDeg' function */
 
 /* Get material pointer function */
 tt6MATERIAL * TT6_RndMtlGet( INT MtlNo )

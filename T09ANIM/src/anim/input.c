@@ -1,6 +1,6 @@
 /* FILE NAME : input.c
  * PROGRAMMER: TT6
- * DATE      : 21.06.2021
+ * DATE      : 27.06.2021
  * PURPOSE   : 3D animation module.
  */
 
@@ -80,8 +80,7 @@ static VOID TT6_AnimJoystickInit( VOID )
 
   /* Joystick */
   if (joyGetNumDevs() > 0)
-  {      
-
+  {  
     JOYCAPS jc;                                     
 
    /* Get joystick info */
@@ -118,8 +117,7 @@ static VOID TT6_AnimJoystickResponse( VOID )
 
   /* Joystick */
   if (joyGetNumDevs() > 0)
-  {      
-
+  {   
     JOYCAPS jc;                                     
 
    /* Get joystick info */

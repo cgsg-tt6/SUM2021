@@ -1,7 +1,7 @@
 /* FILE NAME : anim.h
  * PROGRAMMER: TT6
- * DATE      : 21.06.2021
- * PURPOSE   : 3D animation module.
+ * DATE      : 27.06.2021
+ * PURPOSE   : 3D animation declaration module.
  */
 
 #ifndef __anim_h_
@@ -23,13 +23,6 @@ typedef struct tagtt6ANIM
   HWND hWnd;
   INT W, H;
 
-  /*
-  HWND TT6_hRndWnd;
-  HDC TT6_hRndDC;
-  HLRC TT6_hRndRC;
-  INT TT6_RndFrameW, TT6_RndFrameH;
-  */
-
   tt6UNIT *Units[TT6_MAX_UNITS];
   INT NumOfUnits;
 
@@ -40,9 +33,10 @@ typedef struct tagtt6ANIM
   BOOL
     IsPause;                     /* Pause flag */
 
-  BYTE Keys[256];
-  BYTE KeysClick[256];
-  BYTE KeysOld[256];
+  BYTE                           /* Keyboard data */
+    Keys[256],
+    KeysClick[256],
+    KeysOld[256];
 
   INT Mx, My, Mz, Mdx, Mdy, Mdz; /* Mouse data */
 

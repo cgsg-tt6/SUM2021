@@ -1,6 +1,6 @@
 /* FILE NAME : units.h
  * PROGRAMMER: TT6
- * DATE      : 21.06.2021
+ * DATE      : 27.06.2021
  * PURPOSE   : .
  */
 
@@ -16,8 +16,9 @@
  * RETURNS:
  *   (tt6UNIT *) pointer to created unit.
  */
-tt6UNIT * TT6_UnitCreateCow( VOID );
 tt6UNIT * TT6_UnitControl( VOID );
+tt6UNIT * TT6_UnitCreateGrid( VOID ); 
+tt6UNIT * TT6_UnitCreateFrog( VOID );
 tt6UNIT * TT6_UnitCreateShrimp( VOID );
 tt6UNIT * TT6_UnitCreateBall( VOID );
 

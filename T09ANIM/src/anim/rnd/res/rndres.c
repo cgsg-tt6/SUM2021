@@ -1,6 +1,6 @@
 /* FILE NAME : rndres.c
  * PROGRAMMER: TT6
- * DATE      : 24.06.2021
+ * DATE      : 27.06.2021
  * PURPOSE   : .
  */
 

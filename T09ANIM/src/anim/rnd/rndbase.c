@@ -1,6 +1,6 @@
 /* FILE NAME : rndbase.c
  * PROGRAMMER: TT6
- * DATE      : 21.06.2021
+ * DATE      : 27.06.2021
  * PURPOSE   : 3D animation rendering global data module.
  */
 

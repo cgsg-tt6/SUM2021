@@ -1,6 +1,6 @@
 /* FILE NAME : rnd.h
  * PROGRAMMER: TT6
- * DATE      : 21.06.2021
+ * DATE      : 27.06.2021
  * PURPOSE   : 3D animation rendering declaration module.
  */
 
@@ -11,7 +11,6 @@
 #include <glew.h>
 #include <gl/glu.h>
 
-//#include "../../def.h"
 #include "res/rndres.h"
 
 
@@ -114,6 +113,7 @@ typedef struct tagtt6PRIM
     IBuf;            /* OpenGL index buffer number */
   INT NumOfElements;
   CHAR Ind[300];
+  tt6VERTEX *V;
 
   MATR Trans;   /* Additional transformation matrix */
   INT MtlNo;
@@ -166,6 +166,7 @@ VOID TT6_RndPrimDraw( tt6PRIM *Pr, MATR World );
  */
 BOOL TT6_RndPrimLoad( tt6PRIM *Pr, CHAR *FileName );
 
+BOOL TT6_RndPrimCreateGrid (tt6PRIM *Pr, INT SplitW, INT SplitH);
 BOOL TT6_RndPrintCreatePlane( tt6PRIM *Pr, VEC P, VEC Du, VEC Dv, INT SplitW, INT SplitH );
 
 /***

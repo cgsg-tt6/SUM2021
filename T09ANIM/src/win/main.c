@@ -1,6 +1,6 @@
 /* FILE NAME: main.c
  * PROGRAMMER: TT6
- * DATE: 21.06.2021
+ * DATE: 27.06.2021
  * PURPOSE: 3D animation startup module.
  */
 
@@ -43,7 +43,6 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevTnstance,
   wc.lpszMenuName = NULL;
   wc.lpfnWndProc = TT6_MyWindowFunc;
 
-
   /* Register window class */
   if (!RegisterClass(&wc))
   {
@@ -65,11 +64,12 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevTnstance,
 
   ShowWindow(hWnd, ShowCmd);
   
-  /*** Create units ***/
-  TT6_AnimUnitAdd(TT6_UnitCreateCow());
+  /*** Create units ***/          
   TT6_AnimUnitAdd(TT6_UnitControl());
+  //TT6_AnimUnitAdd(TT6_UnitCreateGrid());
+  TT6_AnimUnitAdd(TT6_UnitCreateFrog());
   TT6_AnimUnitAdd(TT6_UnitCreateShrimp());
-  //TT6_AnimUnitAdd(TT6_UnitCreateBall());
+  /* TT6_AnimUnitAdd(TT6_UnitCreateBall()); */
 
   /* Message loop */
   while (TRUE)
@@ -164,7 +164,8 @@ LRESULT CALLBACK TT6_MyWindowFunc( HWND hWnd, UINT Msg,
     PostQuitMessage(0);
     return 0;
   }
+
   return DefWindowProc(hWnd, Msg, wParam, lParam);
 } /* End of 'TT6_MyWindowFunc' function */
 
-/* END OF 't07globe.c' FILE */
+/* END OF 'main.c' FILE */

@@ -1,7 +1,7 @@
 /* FILE NAME : rndres.h
  * PROGRAMMER: TT6
- * DATE      : 24.06.2021
- * PURPOSE   : 3D animation module.
+ * DATE      : 27.06.2021
+ * PURPOSE   : Shaders, materials, textures declaration module.
  */
 
 #ifndef __rndres_h_

@@ -1,7 +1,7 @@
-/* FILE NAME : u_Shrimp.c
+/* FILE NAME : u_shrimp.c
  * PROGRAMMER: TT6
- * DATE      : 21.06.2021
- * PURPOSE   : Draw Shrimp unit.
+ * DATE      : 27.06.2021
+ * PURPOSE   : Draw shrimp unit.
  */
 
 #include <stdio.h>
@@ -14,6 +14,7 @@ struct tagtt6UNIT_Shrimp
   TT6_UNIT_BASE_FIELDS;
   tt6PRIMS Shrimp;
   VEC Pos;
+  MATR m;
 };
 
 /* Unit initialization function.
@@ -27,6 +28,7 @@ struct tagtt6UNIT_Shrimp
 static VOID TT6_UnitInit( tt6UNIT_Shrimp *Uni, tt6ANIM *Ani )
 {
   TT6_RndPrimsLoad(&Uni->Shrimp, "BIN/MODELS/shrimp.g3dm");
+  Uni->m = MatrMulMatr(MatrScale(VecSet1(0.5)), MatrTranslate(VecSet(-13, 0, 10)));
 } /* End of 'TT6_UnitInit' function */
 
 /* Unit deinitialization function.
@@ -52,10 +54,9 @@ static VOID TT6_UnitClose( tt6UNIT_Shrimp *Uni, tt6ANIM *Ani )
  */
 static VOID TT6_UnitResponse( tt6UNIT_Shrimp *Uni, tt6ANIM *Ani )
 {
-  CHAR Buf[100];
-
-  sprintf(Buf, "FPS: %.3f", Ani->FPS);
-  SetWindowText(Ani->hWnd, Buf);
+  Uni->m = MatrMulMatr3(Uni->m, MatrRotateX(Ani->DeltaTime), MatrTranslate(VecNeg(VecSet(sin(Ani->GlobalDeltaTime * 10) / 5, 0, 0))));
+  if (Ani->KeysClick[VK_RETURN] == 1)
+    Uni->m = MatrScale(VecSet1(0));
 } /* End of 'TT6_UnitResponse' function */
 
 /* Unit render function.
@@ -68,15 +69,11 @@ static VOID TT6_UnitResponse( tt6UNIT_Shrimp *Uni, tt6ANIM *Ani )
  */
 static VOID TT6_UnitRender( tt6UNIT_Shrimp *Uni, tt6ANIM *Ani )
 {
-  TT6_RndPrimsDraw(&Uni->Shrimp, MatrMulMatr3(MatrScale(VecSet1(0.5)), MatrRotateY(Ani->Time * 30), MatrTranslate(VecSet(-13, 0, 0))));
+  TT6_RndPrimsDraw(&Uni->Shrimp, Uni->m);
 } /* End of 'TT6_UnitRender' function */
 
-/* funkcia sozdania objecta */
-
 /* Unit creation function.
- * ARGUMENTS:
- *   - unit structure size in bytes:
- *       INT Size;
+ * ARGUMENTS: None.
  * RETURNS:
  *   (tt6UNIT *) pointer to created unit.
  */
@@ -96,3 +93,5 @@ tt6UNIT * TT6_UnitCreateShrimp( VOID )
 
   return Uni;
 } /* End of 'TT6_UnitCreateShrimp' function */
+
+/* END OF 'u_shrimp.c' FILE */

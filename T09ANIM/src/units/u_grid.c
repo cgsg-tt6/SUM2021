@@ -1,84 +1,70 @@
-/* FILE NAME : u_ctrl.c
+/* FILE NAME : u_grid.c
  * PROGRAMMER: TT6
  * DATE      : 27.06.2021
- * PURPOSE   : Draw triangle unit.
+ * PURPOSE   : Draw grid-floor-plane unit.
  */
+
+#include <stdio.h>
 
 #include "units.h"
 
-typedef struct
+typedef struct tagtt6UNIT_GRID tt6UNIT_GRID;
+struct tagtt6UNIT_GRID
 {
   TT6_UNIT_BASE_FIELDS;
-  VEC Pos;
-  tt6PRIM Pr;
-} tt6UNIT_BALL;
+  tt6PRIMS Grid;
+  MATR m;
+};
 
 /* Unit initialization function.
  * ARGUMENTS:
  *   - self-pointer to unit object:
- *       tt6UNIT_BALL *Uni;
+ *       tt6UNIT_GRID *Uni;
  *   - animation context:
  *       tt6ANIM *Ani;
  * RETURNS: None.
  */
-static VOID TT6_UnitInit( tt6UNIT_BALL *Uni, tt6ANIM *Ani )
+static VOID TT6_UnitInit( tt6UNIT_GRID *Uni, tt6ANIM *Ani )
 {
-  tt6VERTEX V[] =
-  {
-    {{0, 0, 0}, {0, 0}, {0, 0, 1}, {1, 1, 1, 1}},
-    {{2, 0, 0}, {1, 0}, {0, 0, 1}, {1, 1, 1, 1}},
-    {{0, 2, 0}, {0, 1}, {0, 0, 1}, {1, 1, 1, 1}},
-  };
-  INT I[] = {0, 1, 2};
-  /*
-  FLT t[2][2] =
-  {
-    {0.8, 1},
-    {1, 0.3}
-  }; */
-
-  Uni->Pos = VecSet(0, 1, 0);
-  TT6_RndPrimCreate(&Uni->Pr, TT6_RND_PRIM_TRIMESH, V, 3, I, 3);
+  Uni->m = MatrMulMatr(MatrRotateX(-90), MatrScale(VecSet(2.5, 2.5, 2.5)));
 } /* End of 'TT6_UnitInit' function */
 
 /* Unit deinitialization function.
  * ARGUMENTS:
  *   - self-pointer to unit object:
- *       tt6UNIT *Uni;
+ *       tt6UNIT_GRID *Uni;
  *   - animation context:
  *       tt6ANIM *Ani;
  * RETURNS: None.
  */
-static VOID TT6_UnitClose( tt6UNIT_BALL *Uni, tt6ANIM *Ani )
+static VOID TT6_UnitClose( tt6UNIT_GRID *Uni, tt6ANIM *Ani )
 {
-  TT6_RndPrimFree(&Uni->Pr);
+  TT6_RndPrimsFree(&Uni->Grid);
 } /* End of 'TT6_UnitClose' function */
 
 /* Unit inter frame events handle function.
  * ARGUMENTS:
  *   - self-pointer to unit object:
- *       tt6UNIT_BALL *Uni;
+ *       tt6UNIT_GRID *Uni;
  *   - animation context:
  *       tt6ANIM *Ani;
  * RETURNS: None.
  */
-static VOID TT6_UnitResponse( tt6UNIT_BALL *Uni, tt6ANIM *Ani )
+static VOID TT6_UnitResponse( tt6UNIT_GRID *Uni, tt6ANIM *Ani )
 {
-  Uni->Pos.X += Ani->DeltaTime * 0.5;
 } /* End of 'TT6_UnitResponse' function */
 
 /* Unit render function.
  * ARGUMENTS:
  *   - self-pointer to unit object:
- *       tt6UNIT_BALL *Uni;
+ *       tt6UNIT_GRID *Uni;
  *   - animation context:
  *       tt6ANIM *Ani;
  * RETURNS: None.
  */
-static VOID TT6_UnitRender( tt6UNIT_BALL *Uni, tt6ANIM *Ani )
+static VOID TT6_UnitRender( tt6UNIT_GRID *Uni, tt6ANIM *Ani )
 {
-  TT6_RndPrimDraw(&Uni->Pr, MatrRotateX(270));
-  /* DrawSphere(Uni->Pos, 3); */
+  TT6_RndPrimsDraw(&Uni->Grid, Uni->m);
 } /* End of 'TT6_UnitRender' function */
 
 /* Unit creation function.
@@ -86,19 +72,21 @@ static VOID TT6_UnitRender( tt6UNIT_BALL *Uni, tt6ANIM *Ani )
  * RETURNS:
  *   (tt6UNIT *) pointer to created unit.
  */
-tt6UNIT * TT6_UnitCreateBall( VOID )
+tt6UNIT * TT6_UnitCreateGrid( VOID )
 {
   tt6UNIT *Uni;
 
-  if ((Uni = TT6_AnimUnitCreate(sizeof(tt6UNIT_BALL))) == NULL)
+  /* Memory allocation */
+  if ((Uni = TT6_AnimUnitCreate(sizeof(tt6UNIT_GRID))) == NULL)
     return NULL;
 
   /* Setup unit methods */
   Uni->Init = (VOID *)TT6_UnitInit;
+  Uni->Close = (VOID *)TT6_UnitClose;
   Uni->Response = (VOID *)TT6_UnitResponse;
   Uni->Render = (VOID *)TT6_UnitRender;
 
   return Uni;
-} /* End of 'TT6_UnitCreateBall' function */
+} /* End of 'TT6_UnitCreateGrid' function */
 
-/* END OF 'u_ball.c' FILE */
+/* END OF 'u_grid.c' FILE */
